@@ -1,0 +1,9 @@
+npx sequelize model:generate --name OrderDetail --attributes name:string,orderId:UUID,UserId:UUID,quantity:integer
+npx sequelize-cli db:migrate
+npx sequelize-cli model:generate --name imageProduct --attributes name:string,description:string,price:decimal,quantity:integer
+npx sequelize-cli model:generate --name ProductImage --attributes productId:UUID,imageId:UUID
+
+npx sequelize-cli model:generate --name Detail --attributes productId:UUID,producVariantId:UUID
+
+
+npx sequelize-cli model:generate --name size --attributes size:string,desciption:string
