@@ -24,7 +24,7 @@ import index from "../controller/filter/index"
 import {RegisterUser} from "../controller/auth/Register"
 import {loginUser} from "../controller/auth/login"
 import {forgotPasswordController, resetPasswordController } from "../controller/auth/resetpassword"
-import {Orders} from "../controller/order/order"
+import {Orders,vnPay,cancelOrders} from "../controller/order/order"
 import {createPayment, executePayment, cancelPayment } from '../controller/paypal/paypal_controller'
 import {CreateColors} from "../controller/color/create"
 import {EditColor} from "../controller/color/edit"
@@ -39,6 +39,7 @@ import {GetListSize} from "../controller/size/getpaginate"
 import {getOrders} from "../controller/order/get"
 import {getUserOrdersController} from "../controller/order/getOrderById"
 import {loginUserAdmin} from "../controller/auth/loginAdmin"
+import VNPayService from "../services/vnpay/vnpay";
 
 const router = express.Router();
 const upload = multer({
@@ -53,6 +54,19 @@ const upload = multer({
     cb(null, true);
   },
 });
+const secretKey = 'Q0RHU1SCQ6KX6HVFETZTCAJLEZNARAX3';
+const tmnCode = 'GT92S6OD';
+const returnUrl = 'http://localhost:8000/api/v1/vnpay_return';
+const handleVNPayReturn = (req, res) => {
+  const vnpayService = new VNPayService(secretKey, tmnCode, returnUrl);
+  const validSignature = vnpayService.verifyReturn(req.query);
+  if (validSignature) {
+    res.status(200).json({ message: "Payment verified successfully", EC: 0 });
+  } else {
+    res.status(400).json({ message: "Invalid payment signature", EC: 1 });
+  }
+};
+
 
 const ApiRouter = (app) => {
   //Brand
@@ -76,7 +90,7 @@ const ApiRouter = (app) => {
 
 
   router.get("/orders",getOrders)
-  
+
 
 
   //Images
@@ -124,14 +138,19 @@ const ApiRouter = (app) => {
   router.post('/forgot-password',forgotPasswordController)
   router.post('/reset-password',resetPasswordController)
   router.post('/oders',Orders)
+  router.post('/oder-vnpay',vnPay)
   router.get('/oderById/:userId',getUserOrdersController)
 
 
   router.post('/create-payment', createPayment);
   router.get('/success', executePayment);
   router.get('/cancel', cancelPayment);
+
+  router.get('/vnpay_return',handleVNPayReturn)
+  router.post('/cancelorder', cancelOrders);
   
   return app.use("/api/v1", router);
+ 
 
 };
 

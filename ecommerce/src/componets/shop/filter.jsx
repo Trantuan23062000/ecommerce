@@ -215,31 +215,30 @@ const Filter = () => {
 
             {/* Sizes */}
             <div className="pt-4">
-  <h3 className="text-xl text-gray-800 mb-3 uppercase font-medium">
-    Sizes
-  </h3>
-  <div className="grid grid-cols-5 md:grid-cols-5 gap-2 justify-center items-center">
-    {/* Size selectors */}
-    {sizes.map((item) => (
-      <div key={item.id} className="size-selector">
-        <input
-          type="checkbox"
-          id={`size-${item.id}`}
-          className="text-primary focus:ring-0 rounded-sm cursor-pointer sr-only"
-          checked={selectedSizeId === item.id || false}
-          onChange={() => handleChangeSize(item.id)}
-        />
-        <label
-          htmlFor={`size-${item.id}`}
-          className="text-sm border border-gray-200 rounded-sm flex items-center justify-center cursor-pointer shadow-sm text-gray-600 h-10 w-10"
-        >
-          {item.size}
-        </label>
-      </div>
-    ))}
-  </div>
-</div>
-
+              <h3 className="text-xl text-gray-800 mb-3 uppercase font-medium">
+                Sizes
+              </h3>
+              <div className="grid grid-cols-5 md:grid-cols-5 gap-2 justify-center items-center">
+                {/* Size selectors */}
+                {sizes.map((item) => (
+                  <div key={item.id} className="size-selector">
+                    <input
+                      type="checkbox"
+                      id={`size-${item.id}`}
+                      className="text-primary focus:ring-0 rounded-sm cursor-pointer sr-only"
+                      checked={selectedSizeId === item.id || false}
+                      onChange={() => handleChangeSize(item.id)}
+                    />
+                    <label
+                      htmlFor={`size-${item.id}`}
+                      className="text-sm border border-gray-200 rounded-sm flex items-center justify-center cursor-pointer shadow-sm text-gray-600 h-10 w-10"
+                    >
+                      {item.size}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             {/* Colors */}
             <div className="pt-4">

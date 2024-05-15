@@ -1,5 +1,4 @@
 import db from "../../models";
-
 const getUserOrdersId = async (userId) => {
     try {
         // Lấy danh sách đơn hàng của người dùng hiện tại từ bảng OrderDetails
@@ -23,5 +22,4 @@ const getUserOrdersId = async (userId) => {
         throw error;
     }
 }
-
 module.exports = { getUserOrdersId };

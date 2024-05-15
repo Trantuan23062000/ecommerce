@@ -6,6 +6,8 @@ import { selectData } from "../../redux/oder/getorderByid";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { useState } from "react";
+import { cancelOrder } from "../../api/order/order";
+import toast from "react-hot-toast"
 
 const Myorder = () => {
   const user = useSelector(selectUser);
@@ -26,23 +28,32 @@ const Myorder = () => {
 
   const renderPageNumbers = () => {
     const pageNumbers = [];
-  
+
     for (let i = 1; i <= totalPages; i++) {
       pageNumbers.push(
         <button
           key={i}
           onClick={() => setCurrentPage(i)}
           className={`px-4 py-2 mx-1 bg-black text-white rounded-lg ${
-            currentPage === i ? 'bg-indigo-600 text-white' : ''
+            currentPage === i ? "bg-indigo-600 text-white" : ""
           }`}
         >
           {i}
         </button>
       );
     }
-  
     return pageNumbers;
   };
+
+  const HandleCancel = async (orderId) =>{
+    const response = await cancelOrder({orderId})
+    if(response && response.data && response.data.EC === 0){
+       toast.success(response.data.result.message)
+       dispatch(fetchOrderById(user.id))
+    }else{
+      toast.error(response.data.message)
+    }
+  }
 
   return (
     <div>
@@ -110,7 +121,7 @@ const Myorder = () => {
                           <div className="flex items-center">
                             <div>
                               <h2 className="font-semibold text-xl leading-8 text-black mb-3">
-                                Name: {product.Product.name}
+                                {product.Product.name}
                               </h2>
                               <div className="flex items-center ">
                                 <p className="font-medium text-base leading-7 text-black pr-4 mr-4 border-r border-gray-200">
@@ -118,6 +129,16 @@ const Myorder = () => {
                                   <span className="text-gray-500">
                                     {product.productVariant.Size.size}
                                   </span>
+                                </p>
+                                <p className="font-medium flex text-base leading-7 text-black pr-4 mr-4 border-r border-gray-200">
+                                  Color:{" "}
+                                  <label
+                                    htmlFor={`color-${product.id}`}
+                                    className="border border-gray-200 rounded-lg h-6 w-6 cursor-pointer block"
+                                    style={{
+                                      backgroundColor: `${product.productVariant.Color.codeColor}`,
+                                    }}
+                                  ></label>
                                 </p>
                                 <p className="font-medium text-base leading-7 text-black ">
                                   Qty:{" "}
@@ -175,10 +196,9 @@ const Myorder = () => {
                     </div>
                   </div>
                 ))}
-
                 <div className="w-full border-t grid sm:grid-cols-2 grid-cols-2 border-gray-200 px-6 items-center justify-between ">
                   <div className="flex flex-col sm:flex-row items-center max-lg:border-b border-gray-200">
-                    <button className="flex outline-0 py-3 p-4 sm:p-4 whitespace-nowrap gap-2 items-center text-center justify-center font-semibold group text-lg text-white bg-black hover:text-yellow-300 rounded-3xl transition-all duration-500">
+                    <button onClick={()=>HandleCancel(item.Order.id)} className="flex outline-0 py-3 p-4 sm:p-4 whitespace-nowrap gap-2 items-center text-center justify-center font-semibold group text-lg text-white bg-black hover:text-yellow-300 rounded-3xl transition-all duration-500">
                       Cancel Order
                     </button>
                   </div>

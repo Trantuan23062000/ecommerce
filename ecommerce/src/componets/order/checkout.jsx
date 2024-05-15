@@ -6,7 +6,7 @@
   } from "../../redux/slices/cartSlice";
   import { selectUser } from "../../redux/auth/reducers/authReducer";
   import toast from "react-hot-toast";
-  import {Oders} from "../../api/order/order"
+  import {Oders,OrderVNpay} from "../../api/order/order"
   import {useNavigate} from "react-router-dom"
   import { removeAllItems } from "../../redux/slices/cartSlice";
   import SelecttedPayment from "./selecttedPayment";
@@ -43,6 +43,7 @@ import { openPayPal } from "../../api/paypal/paypal";
       // Xử lý thay đổi giá trị của input tại đây (nếu cần)
     };
     const cartJSON = JSON.stringify(cart);
+    
     const SubmitDelivery = async () => {
       const orderData = { 
       order_date: new Date().toISOString().split('T')[0], // Lấy ngày hiện tại
@@ -57,7 +58,7 @@ import { openPayPal } from "../../api/paypal/paypal";
         payment:"Delivery",
         data:cartJSON,
       };
-      console.log(orderDetailData);
+      console.log(orderData,orderDetailData);
       try {
         const response = await Oders({ orderData, orderDetailData });
         if (response.data.EC === 0) {
@@ -66,6 +67,33 @@ import { openPayPal } from "../../api/paypal/paypal";
           navigate("/oder-success")
         } else {
           toast.error("Your order has been placed fail");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to create order");
+      }
+    };
+
+    const SubmitVnPay = async () => {
+      const orderData = { 
+      order_date: new Date().toISOString().split('T')[0], // Lấy ngày hiện tại
+      userId: user ? user.id : null, // Lấy userId từ user nếu user tồn tại
+      };
+      const orderDetailData = { 
+        details:cart.map((item)=>item.id),
+        quantity: totalQuantity,
+        status:0,
+        total:totalPriceWithShipping,
+        cart,
+        payment:"VNpay",
+        data:cartJSON,
+      };
+      try {
+        const response = await OrderVNpay({ orderData, orderDetailData });
+        if(response && response.data && response.data.EC === 0){
+          window.location.href = response.data.paymentUrl          ;
+        }else{
+          toast.error("Failed to open PayPal for payment");
         }
       } catch (error) {
         console.error(error);
@@ -115,7 +143,7 @@ import { openPayPal } from "../../api/paypal/paypal";
 
     return (
       <>
-      {selectOrder?(<SelecttedPayment click = {SubmitDelivery} close = {close} paypal={submitPaypal}/>):null}
+      {selectOrder?(<SelecttedPayment click = {SubmitDelivery} Vnpay = {SubmitVnPay} close = {close} paypal={submitPaypal}/>):null}
     
       <div className="mx-auto max-w-4xl p-4 border bg-white border-black rounded mb-12">
         <h3 className="text-xl font-medium capitalize mb-4 border-b border-gray-200">

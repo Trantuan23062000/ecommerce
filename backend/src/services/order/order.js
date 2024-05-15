@@ -1,4 +1,9 @@
 import db from "../../models/index";
+import VNPayService from "../vnpay/vnpay"
+const secretKey = 'Q0RHU1SCQ6KX6HVFETZTCAJLEZNARAX3';
+const tmnCode = 'GT92S6OD'
+const returnUrl ='http://localhost:3000/oder-success';
+const vnpayService = new VNPayService(secretKey, tmnCode, returnUrl);
 
 const createOrder = async (orderData, orderDetailData) => {
   let transaction;
@@ -85,5 +90,92 @@ const updateProductVariantQuantity = async (cart, transaction) => {
   }
 };
 
+const createOrderVnpay = async (orderData, orderDetailData) => {
+  let transaction;
+  try {
+    transaction = await db.sequelize.transaction();
+    // Thêm đơn hàng vào bảng Orders
+    const newOrder = await db.Orders.create(orderData, { transaction });
+    const orderId = newOrder.id;
 
-module.exports = { createOrder };
+    // Chuyển đổi dữ liệu detail từ mảng sang chuỗi
+    const detailString = orderDetailData.details.join(',');
+
+    // Thêm đơn hàng chi tiết vào bảng OrderDetails với orderId đã tạo
+    const newOrderDetail = await db.OrderDetails.create(
+      { ...orderDetailData, orderId },
+      { transaction }
+    );
+
+    // Lấy id từ trường detail và tham chiếu đến bảng Details
+    const detailIds = orderDetailData.details;
+    const productVariantIds = await getProductVariantIds(detailIds, transaction);
+
+    // Cập nhật số lượng sản phẩm trong bảng ProductVariant dựa trên dữ liệu gửi từ client
+    await updateProductVariantQuantity(orderDetailData.cart, transaction);
+
+    // Lưu thông tin productVariantId và quantity vào trường data của bảng OrderDetails
+    await saveProductVariantInfoToOrderDetails(orderDetailData.cart, newOrderDetail.id, transaction);
+    await transaction.commit();
+    // Tạo URL thanh toán VNPay
+    const paymentParams = {
+      vnp_Version: '2.1.0',
+      vnp_Command: 'pay',
+      vnp_TmnCode: tmnCode,
+      vnp_Amount: orderDetailData.total *100 *24000, // Số tiền thanh toán, đơn vị VND
+      vnp_CurrCode: 'VND',
+      vnp_TxnRef: orderId.toString(), // Mã giao dịch của bạn
+      vnp_OrderInfo: `Thanh+toan+don+hang+${orderId}`,
+      vnp_OrderType: 'other',
+      vnp_Locale: 'vn',
+      vnp_ReturnUrl: returnUrl,
+      vnp_IpAddr: orderData.userId, // Địa chỉ IP của khách hàng
+      vnp_CreateDate: new Date().toISOString().slice(0, 19).replace(/T|-|:/g, ''),
+    };
+    const paymentUrl = vnpayService.createPaymentUrl(paymentParams);
+    return { newOrder, newOrderDetail, paymentUrl };
+  } catch (error) {
+    if (transaction) await transaction.rollback();
+    console.log(error);
+    throw new Error("Failed to create order and order details");
+  }
+};
+const cancelOrder = async (orderId) => {
+  let transaction;
+  try {
+    transaction = await db.sequelize.transaction();
+
+    // Tìm đơn hàng
+    const order = await db.Orders.findByPk(orderId, { transaction });
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+    // Lấy chi tiết đơn hàng
+    const orderDetails = await db.OrderDetails.findAll({ where: { orderId }, transaction });
+
+    // Hoàn trả số lượng sản phẩm trong bảng ProductVariant
+    for (const orderDetail of orderDetails) {
+      const data = JSON.parse(orderDetail.data);
+      for (const item of data) { // Lặp qua mỗi phần tử trong mảng data
+        const productVariantId = item.productVariantId; // Lấy productVariantId
+        const productVariant = await db.productVariant.findByPk(productVariantId, { transaction });
+        if (productVariant) {
+          productVariant.quantity += item.productVariant.quantity; // Sử dụng item.quantity thay vì data[productVariantId]
+          await productVariant.save({ transaction });
+        }
+      }
+    }
+    // Xóa chi tiết đơn hàng
+    await db.OrderDetails.destroy({ where: { orderId }, transaction });
+    // Xóa đơn hàng
+    await db.Orders.destroy({ where: { id: orderId }, transaction });
+    await transaction.commit();
+    return { message: "Order cancelled successfully" };
+  } catch (error) {
+    if (transaction) await transaction.rollback();
+    console.log(error);
+    throw new Error("Failed to cancel order");
+  }
+};
+module.exports = { createOrder, createOrderVnpay, cancelOrder };
