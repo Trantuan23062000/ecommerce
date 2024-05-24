@@ -261,22 +261,20 @@ const CreateDetails = (props) => {
                 </div>
               </div>
             </div>
-            <div className="flex flex-row-reverse p-2">
-              <button
-                onClick={props.close}
-                type="button"
-                className="text-red-500 hover:text-white border border-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-6 py-2 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
-              >
-                Close
-              </button>
-              <button
-                onClick={handleSubmit}
-                type="submit"
-                className="text-blue-600 hover:text-white border border-blue-800 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-6 py-2 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
-              >
-                UPLOAD
-              </button>
-            </div>
+            <div className="flex justify-end">
+          <button
+            onClick={props.close}
+            className="px-4 py-2 mr-2 text-sm font-medium text-red-500 border border-red-500 rounded-lg hover:bg-red-600 hover:text-white dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
+          >
+            Close
+          </button>
+          <button
+            onClick={()=>handleSubmit()}
+            className="px-4 py-2 text-sm font-medium text-blue-600 border border-blue-800 rounded-lg hover:bg-blue-600 hover:text-white dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
+          >
+            Upload
+          </button>
+        </div>
           </div>
         </div>
       </div>

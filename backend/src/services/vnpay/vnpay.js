@@ -1,5 +1,6 @@
-import crypto from "crypto";
-import querystring from "querystring";
+// vnpayService.js
+import crypto from 'crypto';
+import querystring from 'querystring';
 
 class VNPayService {
   constructor(secretKey, tmnCode, returnUrl) {
@@ -9,7 +10,7 @@ class VNPayService {
   }
 
   createVNPayHash() {
-    return crypto.createHmac("sha512", this.secretKey);
+    return crypto.createHmac('sha512', this.secretKey);
   }
 
   createPaymentUrl(params) {
@@ -22,7 +23,7 @@ class VNPayService {
     // Tạo chuỗi query string
     const queryString = querystring.stringify(sortedParams);
     // Tạo chữ ký
-    const vnp_SecureHash = this.createVNPayHash().update(queryString).digest("hex");
+    const vnp_SecureHash = this.createVNPayHash().update(queryString).digest('hex');
 
     return `https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?${queryString}&vnp_SecureHash=${vnp_SecureHash}`;
   }
@@ -37,7 +38,7 @@ class VNPayService {
     }, {});
 
     const queryString = querystring.stringify(sortedQuery);
-    const hash = this.createVNPayHash().update(queryString).digest("hex");
+    const hash = this.createVNPayHash().update(queryString).digest('hex');
 
     return hash === vnp_SecureHash;
   }

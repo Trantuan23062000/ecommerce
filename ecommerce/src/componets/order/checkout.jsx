@@ -1,150 +1,163 @@
-  import React, { useEffect, useState } from "react";
-  import { useSelector,useDispatch } from "react-redux";
-  import {
-    selectCartItems,
-    calculateTotalPrice,
-  } from "../../redux/slices/cartSlice";
-  import { selectUser } from "../../redux/auth/reducers/authReducer";
-  import toast from "react-hot-toast";
-  import {Oders,OrderVNpay} from "../../api/order/order"
-  import {useNavigate} from "react-router-dom"
-  import { removeAllItems } from "../../redux/slices/cartSlice";
-  import SelecttedPayment from "./selecttedPayment";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  selectCartItems,
+  calculateTotalPrice,
+} from "../../redux/slices/cartSlice";
+import { selectUser } from "../../redux/auth/reducers/authReducer";
+import toast from "react-hot-toast";
+import { Oders, OrderVNpay } from "../../api/order/order";
+import { useNavigate } from "react-router-dom";
+import { removeAllItems } from "../../redux/slices/cartSlice";
+import SelecttedPayment from "./selecttedPayment";
 import { openPayPal } from "../../api/paypal/paypal";
-  const Checkout = () => {
-    const dispatch = useDispatch()
-    const user = useSelector(selectUser);
-    const cart = useSelector(selectCartItems);
-    const totalPrice = calculateTotalPrice(cart);
-    const shippingCost = 5;
-    const totalPriceWithShipping = totalPrice + shippingCost;
-    const [totalQuantity, setTotalQuantity] = useState(0);
-    const [selectOrder, setSelectOrder]= useState(false)
-    const navigate = useNavigate()
-    useEffect(() => {
-      const newTotalQuantity = cart.reduce(
-        (total, item) => total + item.productVariant.quantity,
-        0
-      );
-      setTotalQuantity(newTotalQuantity);
-      const paymentData = JSON.parse(localStorage.getItem("paymentData"));
-      if (paymentData) {
-        localStorage.removeItem("paymentData");
-      }
-    }, [cart]);
-
-    useEffect(()=>{
-        if(!user || cart.length === 0){
-          navigate("/shop")
-        }
-        // eslint-disable-next-line
-    },[])
-    const handleInputChange = (e) => {
-      // Xử lý thay đổi giá trị của input tại đây (nếu cần)
-    };
-    const cartJSON = JSON.stringify(cart);
-    
-    const SubmitDelivery = async () => {
-      const orderData = { 
-      order_date: new Date().toISOString().split('T')[0], // Lấy ngày hiện tại
-      userId: user ? user.id : null, // Lấy userId từ user nếu user tồn tại
-      };
-      const orderDetailData = { 
-        details:cart.map((item)=>item.id),
-        quantity: totalQuantity,
-        status:0,
-        total:totalPriceWithShipping,
-        cart,
-        payment:"Delivery",
-        data:cartJSON,
-      };
-      console.log(orderData,orderDetailData);
-      try {
-        const response = await Oders({ orderData, orderDetailData });
-        if (response.data.EC === 0) {
-          // Chuyển hướng về trang shop nếu đặt hàng thành công
-          dispatch(removeAllItems())
-          navigate("/oder-success")
-        } else {
-          toast.error("Your order has been placed fail");
-        }
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to create order");
-      }
-    };
-
-    const SubmitVnPay = async () => {
-      const orderData = { 
-      order_date: new Date().toISOString().split('T')[0], // Lấy ngày hiện tại
-      userId: user ? user.id : null, // Lấy userId từ user nếu user tồn tại
-      };
-      const orderDetailData = { 
-        details:cart.map((item)=>item.id),
-        quantity: totalQuantity,
-        status:0,
-        total:totalPriceWithShipping,
-        cart,
-        payment:"VNpay",
-        data:cartJSON,
-      };
-      try {
-        const response = await OrderVNpay({ orderData, orderDetailData });
-        if(response && response.data && response.data.EC === 0){
-          window.location.href = response.data.paymentUrl          ;
-        }else{
-          toast.error("Failed to open PayPal for payment");
-        }
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to create order");
-      }
-    };
-
-    const submitPaypal = async () => {
-      const orderData = { 
-        order_date: new Date().toISOString().split('T')[0],
-        userId: user ? user.id : null,
-      };
-      
-      const orderDetailData = { 
-        details: cart.map((item) => item.id),
-        quantity: totalQuantity,
-        status: 1,
-        total: totalPriceWithShipping,
-        payment:"Paypal",
-        cart,
-        data:cartJSON
-      };
-      try {
-        const response = await openPayPal(orderDetailData);
-        if (response.data.EC === 0) {
-          localStorage.setItem("paymentData", JSON.stringify({orderData,orderDetailData}));
-          // Nếu thanh toán PayPal thành công, chuyển hướng đến trang thanh toán
-          window.location.href = response.data.approval_url;
-          
-        } else {
-          // Xử lý trường hợp không thành công (ví dụ: hiển thị thông báo)
-          toast.error("Failed to open PayPal for payment");
-        }
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to create order");
-      }
-    };
-
-    const show = () =>{
-      setSelectOrder(true)
+import { format } from 'date-fns'
+const Checkout = () => {
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+  const cart = useSelector(selectCartItems);
+  const totalPrice = calculateTotalPrice(cart);
+  const shippingCost = 5;
+  const totalPriceWithShipping = totalPrice + shippingCost;
+  const [totalQuantity, setTotalQuantity] = useState(0);
+  const [selectOrder, setSelectOrder] = useState(false);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const newTotalQuantity = cart.reduce(
+      (total, item) => total + item.productVariant.quantity,
+      0
+    );
+    setTotalQuantity(newTotalQuantity);
+    const paymentData = JSON.parse(localStorage.getItem("paymentData"));
+    if (paymentData) {
+      localStorage.removeItem("paymentData");
     }
+  }, [cart]);
 
-    const close = () =>{
-      setSelectOrder(false)
+  useEffect(() => {
+    if (!user || cart.length === 0) {
+      navigate("/shop");
     }
+    // eslint-disable-next-line
+  }, []);
+  const handleInputChange = (e) => {
+    // Xử lý thay đổi giá trị của input tại đây (nếu cần)
+  };
+  const cartJSON = JSON.stringify(cart);
+  const formatDate = (date) => {
+    return format(new Date(date), 'dd/MM/yyyy');
+  };
+  
+  const SubmitDelivery = async () => {
+    const orderData = {
+      order_date: formatDate(new Date()), // Lấy ngày hiện tại
+      userId: user ? user.id : null, // Lấy userId từ user nếu user tồn tại
+    };
+    const orderDetailData = {
+      details: cart.map((item) => item.id),
+      quantity: totalQuantity,
+      status: 0,
+      total: totalPriceWithShipping,
+      cart,
+      payment: "Delivery",
+      data: cartJSON,
+    };
+    console.log(orderData,orderDetailData);
+    try {
+      const response = await Oders({ orderData, orderDetailData });
+      if (response.data.EC === 0) {
+        // Chuyển hướng về trang shop nếu đặt hàng thành công
+        dispatch(removeAllItems());
+        navigate("/oder-success");
+      } else {
+        toast.error("Your order has been placed fail");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create order");
+    }
+  };
+  const SubmitVnPay = async () => {
+    const orderData = {
+      order_date: formatDate(new Date()), // Lấy ngày hiện tại
+      userId: user ? user.id : null, // Lấy userId từ user nếu user tồn tại
+    };
+    const orderDetailData = {
+      details: cart.map((item) => item.id),
+      quantity: totalQuantity,
+      status: 2,
+      total: totalPriceWithShipping,
+      cart,
+      payment: "VNpay",
+      data: cartJSON,
+    };
+    // console.log(orderData,orderDetailData);
+    try {
+      const response = await OrderVNpay({ orderData, orderDetailData });
+      if (response && response.data && response.data.EC === 0) {
+        window.location.href = response.data.paymentUrl;
+      } else {
+        toast.error("Failed to open PayPal for payment");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create order");
+    }
+  };
 
-    return (
-      <>
-      {selectOrder?(<SelecttedPayment click = {SubmitDelivery} Vnpay = {SubmitVnPay} close = {close} paypal={submitPaypal}/>):null}
-    
+  const submitPaypal = async () => {
+    const orderData = {
+      order_date: formatDate(new Date()),
+      userId: user ? user.id : null,
+    };
+
+    const orderDetailData = {
+      details: cart.map((item) => item.id),
+      quantity: totalQuantity,
+      status: 2,
+      total: totalPriceWithShipping,
+      payment: "Paypal",
+      cart,
+      data: cartJSON,
+    };
+    try {
+      const response = await openPayPal(orderDetailData);
+      if (response.data.EC === 0) {
+        localStorage.setItem(
+          "paymentData",
+          JSON.stringify({ orderData, orderDetailData })
+        );
+        // Nếu thanh toán PayPal thành công, chuyển hướng đến trang thanh toán
+        window.location.href = response.data.approval_url;
+      } else {
+        // Xử lý trường hợp không thành công (ví dụ: hiển thị thông báo)
+        toast.error("Failed to open PayPal for payment");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create order");
+    }
+  };
+
+  const show = () => {
+    setSelectOrder(true);
+  };
+
+  const close = () => {
+    setSelectOrder(false);
+  };
+
+  return (
+    <>
+      {selectOrder ? (
+        <SelecttedPayment
+          click={SubmitDelivery}
+          Vnpay={SubmitVnPay}
+          close={close}
+          paypal={submitPaypal}
+        />
+      ) : null}
+
       <div className="mx-auto max-w-4xl p-4 border bg-white border-black rounded mb-12">
         <h3 className="text-xl font-medium capitalize mb-4 border-b border-gray-200">
           Checkout
@@ -191,7 +204,7 @@ import { openPayPal } from "../../api/paypal/paypal";
                   Adress
                 </label>
                 <input
-                onChange={handleInputChange}
+                  onChange={handleInputChange}
                   type="text"
                   placeholder="You should update your address information to receive the goods "
                   className=" w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none"
@@ -231,7 +244,7 @@ import { openPayPal } from "../../api/paypal/paypal";
             </h4>
 
             <div className="space-y-2">
-              { React.Children.toArray(
+              {React.Children.toArray(
                 cart.map((item) => (
                   <div className="border-b border-gray-200 py-4">
                     <div className="flex justify-between items-center">
@@ -249,7 +262,7 @@ import { openPayPal } from "../../api/paypal/paypal";
                         </div>
                       </div>
                       <div className="text-gray-600">
-                      X {item.productVariant.quantity}
+                        X {item.productVariant.quantity}
                       </div>
                       <div className="text-gray-800 font-medium">
                         {(
@@ -286,7 +299,7 @@ import { openPayPal } from "../../api/paypal/paypal";
                       currency: "USD",
                     })}
                   </>
-                ):(
+                ) : (
                   <div>0.00$</div>
                 )}
               </div>
@@ -307,14 +320,16 @@ import { openPayPal } from "../../api/paypal/paypal";
               </label>
             </div>
 
-            <div onClick={show} className="block w-xl py-3 px-4 text-center text-white bg-black border rounded-xl transition font-medium hover:text-yellow-500 transform hover:scale-110">
-             Select a payment method
+            <div
+              onClick={show}
+              className="block w-xl py-3 px-4 text-center text-white bg-black border rounded-xl transition font-medium hover:text-yellow-500 transform hover:scale-110"
+            >
+              Select a payment method
             </div>
           </div>
         </div>
       </div>
-      </>
-    );
-  };
-
-  export default Checkout;
+    </>
+  );
+};
+export default Checkout;

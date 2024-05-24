@@ -1,24 +1,137 @@
 import db from "../../models";
-const getOrder = async () => {
-    try {
-        // Lấy danh sách đơn hàng từ bảng OrderDetails
-        const orders = await db.OrderDetails.findAll({
-            include: [{
-                model: db.Orders,
-                include: [{
-                    model: db.Users,
-                    attributes: ['id', 'username'] // Chỉ lấy các trường id, username, email từ bảng Users
-                }],
-                attributes: ['id', 'order_date'] // Chỉ lấy các trường id, createdAt, updatedAt từ bảng Orders
-            }],
-            attributes: ['id', 'quantity', 'status', 'payment', 'total','data'] // Chỉ lấy các trường id, quantity, status, payment, data từ bảng OrderDetails
-        });
+import { Op, fn, col, literal } from "sequelize";
 
-        // Trả về danh sách đơn hàng
-        return { orders };
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-}
-module.exports = {getOrder}
+// Hàm lấy danh sách đơn hàng
+const getOrder = async () => {
+  try {
+    const orders = await db.OrderDetails.findAll({
+      include: [
+        {
+          model: db.Orders,
+          include: [
+            {
+              model: db.Users,
+              attributes: ["id", "username"],
+            },
+          ],
+          attributes: ["id", "order_date"],
+        },
+      ],
+      attributes: ["id", "quantity", "status", "payment", "total", "data"],
+    });
+
+    return { orders };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+// Hàm lấy danh sách đơn hàng theo khoảng thời gian
+const getOrdersByDateRange = async (startDate, endDate) => {
+  try {
+    const orders = await db.OrderDetails.findAll({
+      include: [
+        {
+          model: db.Orders,
+          where: {
+            order_date: {
+              [Op.between]: [startDate, endDate],
+            },
+          },
+          include: [
+            {
+              model: db.Users,
+              attributes: ["id", "username"],
+            },
+          ],
+          attributes: ["id", "order_date"],
+        },
+      ],
+      attributes: ["id", "quantity", "status", "payment", "total", "data"],
+    });
+    return { orders };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+const calculateDailyRevenue = async () => {
+  try {
+    const dailyRevenue = await db.OrderDetails.findAll({
+      attributes: [
+        [fn("DATE", col("createdAt")), "orderDate"],
+        [fn("SUM", col("total")), "totalRevenue"],
+      ],
+      group: [literal("DATE(`createdAt`)")],
+      order: [[literal("orderDate"), "ASC"]],
+      raw: true,
+    });
+
+    return { dailyRevenue };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+const calculateDailyRevenueDaily = async (startDate, endDate) => {
+  const convertDateFormat = (dateString) => {
+    const [day, month, year] = dateString.split("/");
+    return `${year}-${month}-${day}`;
+  };
+
+  // Sử dụng hàm convertDateFormat để chuyển đổi ngày
+  const startDateISO = convertDateFormat(startDate);
+  const endDateISO = convertDateFormat(endDate);
+
+  // Thêm một ngày vào ngày kết thúc để bao gồm cả ngày kết thúc
+  const endDatePlusOne = new Date(endDateISO);
+  endDatePlusOne.setDate(endDatePlusOne.getDate() + 1);
+  const endDatePlusOneISO = endDatePlusOne.toISOString().split("T")[0];
+
+  try {
+    const dailyRevenue = await db.OrderDetails.findAll({
+      where: {
+        createdAt: {
+          [Op.between]: [startDateISO, endDatePlusOneISO],
+        },
+      },
+      attributes: [
+        [fn("DATE_FORMAT", col("createdAt"), "%Y-%m-%d"), "orderDate"], // Format ngày đầu ra theo YYYY-MM-DD
+        [fn("SUM", col("total")), "totalRevenue"],
+      ],
+      group: [fn("DATE_FORMAT", col("createdAt"), "%Y-%m-%d")], // Nhóm theo ngày định dạng YYYY-MM-DD
+      order: [[fn("DATE_FORMAT", col("createdAt"), "%Y-%m-%d"), "ASC"]], // Sắp xếp theo ngày tăng dần
+      raw: true,
+    });
+
+    // Format lại ngày trả về thành dd/MM/yyyy
+    const formattedDailyRevenue = dailyRevenue.map((item) => ({
+      orderDate: formatDate(item.orderDate), // Format ngày theo dd/MM/yyyy
+      totalRevenue: item.totalRevenue,
+    }));
+
+    return { dailyRevenue: formattedDailyRevenue };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+// Hàm format ngày
+const formatDate = (dateString) => {
+  const dateParts = dateString.split("-");
+  const year = dateParts[0];
+  const month = dateParts[1];
+  const day = dateParts[2];
+  return `${day}/${month}/${year}`;
+};
+
+module.exports = {
+  getOrder,
+  getOrdersByDateRange,
+  calculateDailyRevenue,
+  calculateDailyRevenueDaily,
+};

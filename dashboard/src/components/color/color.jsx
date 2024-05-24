@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
+  ChevronRight,
   ControlPointRounded,
   CrisisAlert,
   Delete,
@@ -126,8 +127,14 @@ const Color = () => {
           edit={edit}
         />
       ) : null}
+       <div className="py-4 ml-4 flex items-center gap-3">
+        <span className="text-sm text-gray-400">
+          <ChevronRight />
+        </span>
+        <p className="text-gray-600 font-medium">Color</p>
+      </div>
       <section className="dark:bg-gray-900 p-3 sm:p-5">
-        <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
+        <div className="px-4 lg:px-12">
           <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
             <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
               <div className="w-full md:w-1/2">

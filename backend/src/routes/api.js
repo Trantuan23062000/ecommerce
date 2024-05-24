@@ -36,10 +36,15 @@ import {EditSize} from "../controller/size/edit"
 import {SearchSizes} from "../controller/size/search"
 import {DeleteSize} from "../controller/size/delete"
 import {GetListSize} from "../controller/size/getpaginate"
-import {getOrders} from "../controller/order/get"
+import {getOrders,filterRateOrders,Dailyrevenue,DailyrevenueDaily} from "../controller/order/get"
 import {getUserOrdersController} from "../controller/order/getOrderById"
 import {loginUserAdmin} from "../controller/auth/loginAdmin"
 import VNPayService from "../services/vnpay/vnpay";
+import {handleVNPAYCallback,cancelPaymentVNpay} from "../controller/vnpay/callback"
+import {CountOrders} from "../controller/statistics/order"
+import {CountProducts} from "../controller/statistics/produtcs"
+import {CountUsers} from "../controller/statistics/user"
+import {getAccount} from "../controller/auth/account"
 
 const router = express.Router();
 const upload = multer({
@@ -54,19 +59,6 @@ const upload = multer({
     cb(null, true);
   },
 });
-const secretKey = 'Q0RHU1SCQ6KX6HVFETZTCAJLEZNARAX3';
-const tmnCode = 'GT92S6OD';
-const returnUrl = 'http://localhost:8000/api/v1/vnpay_return';
-const handleVNPayReturn = (req, res) => {
-  const vnpayService = new VNPayService(secretKey, tmnCode, returnUrl);
-  const validSignature = vnpayService.verifyReturn(req.query);
-  if (validSignature) {
-    res.status(200).json({ message: "Payment verified successfully", EC: 0 });
-  } else {
-    res.status(400).json({ message: "Invalid payment signature", EC: 1 });
-  }
-};
-
 
 const ApiRouter = (app) => {
   //Brand
@@ -146,8 +138,22 @@ const ApiRouter = (app) => {
   router.get('/success', executePayment);
   router.get('/cancel', cancelPayment);
 
-  router.get('/vnpay_return',handleVNPayReturn)
+  router.get('/vnpay_return',VNPayService)
+  router.get('/payment/callback',handleVNPAYCallback)
+  router.get('/paymentVNpay/cancel', cancelPaymentVNpay);
   router.post('/cancelorder', cancelOrders);
+
+  router.get('/orders/count',CountOrders)
+  router.get('/products/count',CountProducts)
+  router.get('/users/count',CountUsers)
+  router.get('/orders/filterDate',filterRateOrders)
+  router.get('/orders/daily-revenue',Dailyrevenue)
+  router.get('/orders/daily',DailyrevenueDaily)
+
+  
+
+  router.get ('/users',getAccount)
+  
   
   return app.use("/api/v1", router);
  

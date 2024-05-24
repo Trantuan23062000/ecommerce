@@ -10,11 +10,10 @@ const Orders = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" }); // Trả về lỗi nếu có bất kỳ lỗi nào xảy ra
   }
 };
-
 const vnPay = async (req, res) => {
   try {
     const { orderData, orderDetailData } = req.body; // Lấy dữ liệu đơn hàng và chi tiết đơn hàng từ body của request
-    const { newOrder, newOrderDetail, paymentUrl } = await createOrderVnpay(orderData, orderDetailData); // Gọi hàm createOrder để tạo đơn hàng và nhận kết quả
+    const {  paymentUrl,newOrder, newOrderDetail, } = await createOrderVnpay(orderData, orderDetailData); // Gọi hàm createOrder để tạo đơn hàng và nhận kết quả
     res.status(201).json({ newOrder, newOrderDetail, paymentUrl, EC: 0 }); // Trả về kết quả với mã trạng thái 201 (Created)
   } catch (error) {
     console.error(error);

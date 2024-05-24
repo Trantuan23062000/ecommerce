@@ -4,7 +4,6 @@ import Navbar from "./layout/navbar";
 import Sidebar from "./layout/siderbar"; // Đã sửa thành Sidebar
 import Main from "./layout/main";
 import { SidebarProvider } from "./context/SidebarContext";
-import Footer from "./layout/footer";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import ProductImage from "./components/productImage/productImage";
 import Brand from "./components/brand/Brand";
@@ -14,6 +13,9 @@ import Color from "./components/color/color";
 import Size from "./components/size/size";
 import Order from "./components/order/order";
 import Login from "./components/auth/login";
+import Account from "./components/account/account";
+import Show from "./components/account/show";
+
 
 const App = () => {
   return (
@@ -22,8 +24,8 @@ const App = () => {
         <div className="flex flex-col min-h-screen">
           <Navbar />
           <Toaster/>
-          <div className="flex flex-1">
-            <Sidebar />
+          <div className="flex flex-1 flex-grow transition-all duration-300">
+          <Sidebar/>
             <Routes>
               <Route exact path="/" element={<Main />} />
               <Route exact path="/product-image" element={<ProductImage/>}/>
@@ -32,11 +34,12 @@ const App = () => {
               <Route exact path="/color" element={<Color/>}/>
               <Route exact path="/size" element={<Size/>}/>
               <Route exact path="/order" element={<Order/>}/>
+              <Route exact path="/account" element={<Account/>}/>
               <Route exact path="/login" element={<Login/>}/>
+              <Route exact path="/myorder/:userId" element={<Show/>}/>
               <Route />
             </Routes>
           </div>
-          <Footer />
         </div>
       </Router>
     </SidebarProvider>

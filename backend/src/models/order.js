@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4 
     },
-    order_date: DataTypes.DATE,
+    order_date: DataTypes.STRING,
     userId: DataTypes.UUID,
   }, {
     sequelize,

@@ -1,75 +1,53 @@
 import React from "react";
-import {FaAmazonPay, FaHome, FaPaypal, FaTimes} from "react-icons/fa"
+import { FaAmazonPay, FaHome, FaPaypal, FaTimes } from "react-icons/fa";
 
 const SelecttedPayment = (props) => {
   return (
     <div>
-      <div className="overflow-x-hidden justify-center p-24 text-center overflow-y-auto fixed inset-0 z-50 items-center">
-        <div className="relative w-auto mx-auto max-w-xl">
-          <div className="relative p-2 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
-            <div className="flex items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
-              <h3 className="text-lg font-semibold text-center justify-center text-gray-900 dark:text-white">
-                Select payment order
-              </h3>
-              <button
-                onClick={props.close}
-                type="button"
-                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-              >
-                <svg
-                  aria-hidden="true"
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
-                <span className="sr-only">Close modal</span>
-              </button>
-            </div>
-            <div>
-              <div className="max-w-sm mx-auto">
-              <button
-                type="button"
-                onClick={props.click}
-                className="text-white flex bg-green-700 hover:text-white hover:bg-green-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-24 py-2 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
-              >
-                Payment on delivery <FaHome size={24}/>
-              </button>
-              <button
-                type="button"
-                onClick={props.Vnpay}
-                className="text-white flex bg-blue-600 hover:text-white hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-24 py-2 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
-              >
-                Payment VNpay <FaAmazonPay size={24}/>
-              </button>
-              <button
-                type="button"
-                onClick={props.paypal}
-                className="text-white flex bg-yellow-500 hover:text-white hover:bg-yellow-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-24 py-2 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
-              >
-                Payment on Paypay <FaPaypal size={24}/>
-              </button>
-              </div>
-            </div>
-            <div className="flex justify-center flex-row-reverse p-2 ">
-              <button
-                onClick={props.close}
-                type="button"
-                className=" hover:text-white hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-full text-sm text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
-              >
-                <FaTimes size={24}/>
-              </button>
-            </div>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-x-hidden overflow-y-auto">
+        <div className="relative w-full max-w-md mx-auto bg-white rounded-lg shadow-lg dark:bg-gray-800">
+          <div className="flex items-center justify-between p-4 border-b border-gray-300 dark:border-gray-600">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Select Payment Method
+            </h3>
+            <button
+              onClick={props.close}
+              type="button"
+              className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+            >
+              <FaTimes size={20} />
+              <span className="sr-only">Close modal</span>
+            </button>
+          </div>
+          <div className="p-6 space-y-4">
+            <button
+              type="button"
+              onClick={props.click}
+              className="flex items-center justify-center w-full px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300"
+            >
+              <FaHome size={24} className="mr-2" />
+              Payment on Delivery
+            </button>
+            <button
+              type="button"
+              onClick={props.Vnpay}
+              className="flex items-center justify-center w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300"
+            >
+              <FaAmazonPay size={24} className="mr-2" />
+              Payment with VNpay
+            </button>
+            <button
+              type="button"
+              onClick={props.paypal}
+              className="flex items-center justify-center w-full px-4 py-2 text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 focus:ring-4 focus:ring-yellow-300"
+            >
+              <FaPaypal size={24} className="mr-2" />
+              Payment with PayPal
+            </button>
           </div>
         </div>
       </div>
-      <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+      <div className="fixed inset-0 z-40 bg-black opacity-50"></div>
     </div>
   );
 };

@@ -2,101 +2,159 @@ import React, { useState } from "react";
 import {
   AccountBox,
   Analytics,
-  ArrowDropUp,
-  ArrowRight,
+  ArrowDropUpRounded,
+  ArrowRightRounded,
+  Backspace,
+  ChevronRight,
   Home,
   Inventory,
   Logout,
   ShoppingCart,
 } from "@mui/icons-material";
-import {Link} from "react-router-dom"
-import { useSidebar } from '../context/SidebarContext';
+import { Link } from "react-router-dom";
+import { useSidebar } from "../context/SidebarContext";
 
 const Sidebar = () => {
-  const [expandedItem, setExpandedItem] = useState("Dashboard");
-  const { isSidebarOpen } = useSidebar();
-
+  const [expandedItem, setExpandedItem] = useState("");
+  const { isSidebarOpen, toggleSidebar } = useSidebar();
+  const [activeItem, setActiveItem] = useState("");
 
   const handleItemClick = (itemName) => {
-    setExpandedItem(itemName === expandedItem ? "Dashboard" : itemName);
+    setExpandedItem(itemName === expandedItem ? "" : itemName);
+    setActiveItem(itemName); // Cập nhật activeItem khi một mục được click
   };
 
   return (
-    <div className={`bg-gray-100 text-black w-48 flex flex-col container ${isSidebarOpen ? '' : 'hidden'}`}>
-      <div className="p-4 font-sans container mx-auto">
-        <div
-          className="cursor-pointer flex items-center mb-4 bg-yellow-400 px-4 py-2 rounded-lg"
-          onClick={() => handleItemClick("Dashboard")}
-        >
-          <Home />
-          <Link to="/"> Dashboard</Link>
-        </div>
-        <div className="text-sm mb-2 p-4 font-semibold">Menu</div>
-        <div
-          className={`cursor-pointer flex items-center mb-4 ${
-            expandedItem === "Product"
-              ? "bg-gray-300 px-4 py-2 rounded-lg"
-              : ""
-          }`}
-          onClick={() => handleItemClick("Product")}
-        >
-          <div className="flex">
-            <Inventory />
-            Product
+    <div>
+      <div
+        className={`bg-gray-300 text-black fixed top-0 left-0 h-full lg:relative lg:translate-x-0 transition-transform transform z-50 ${
+          isSidebarOpen ? "" : "hidden"
+        } "translate-x-0" : "-translate-x-full"
+        } w-64`}
+      >
+        <div className="p-4">
+          <div
+            className={`cursor-pointer flex items-center mb-4 px-4 py-2 rounded-lg ${
+              expandedItem === "Dashboard"
+                ? "bg-orange-400"
+                : activeItem === "Dashboard" // Sử dụng activeItem để xác định lớp CSS cho mục active
+                ? "bg-orange-400"
+                : "hover:bg-orange-400"
+            }`}
+            onClick={() => handleItemClick("Dashboard")}
+          >
+            <Home className="mr-2" style={{ fontSize: 36 }} />
+            <Link to="/" className="flex-grow font-semibold">
+              Dashboard
+            </Link>
           </div>
-          {expandedItem === "Product" ? <ArrowDropUp /> : <ArrowRight />}
-        </div>
-        {expandedItem === "Product" && (
-          <ul className="pl-1">
-            <div className="text-sm mb-2"><Link to="/Product-image">Product image</Link></div>
-            <div className="text-sm mb-2"><Link to="/product-variant">Productvariant</Link></div>
-            <div className="text-sm mb-2"><Link to="/brand">Brand</Link></div>
-            <div className="text-sm mb-2"><Link to="/color">Color</Link></div>
-            <div className="text-sm mb-2"><Link to="/size">Size</Link></div>
-          </ul>
-        )}
-        <div
-          className={`cursor-pointer flex items-center mb-4 ${
-            expandedItem === "Order"
-              ? "bg-gray-300 px-4 py-2 rounded-lg"
-              : ""
-          }`}
-          onClick={() => handleItemClick("Order")}
-        >
-          <span className="flex">
-            <ShoppingCart />
-           <Link to="/order"> Order </Link>
-          </span>
-          {expandedItem === "Order" }
-        </div>
-        <div
-          className={`cursor-pointer flex items-center mb-4 ${
-            expandedItem === "Account"
-              ? "bg-gray-300 px-4 py-2 rounded-lg"
-              : ""
-          }`}
-          onClick={() => handleItemClick("Account")}
-        >
-          <span className="flex">
-            <AccountBox />
-            Account
-          </span>
-          {expandedItem === "Account" ? <ArrowDropUp /> : <ArrowRight />}
-        </div>
-        {expandedItem === "Account" && (
-          <ul className="pl-6">
-            <li className="text-sm mb-1">Item 1</li>
-            <li className="text-sm mb-1">Item 2</li>
-            <li className="text-sm mb-1">Item 3</li>
-          </ul>
-        )}
-        <div>
-          <Analytics />
-          Analytics
-        </div>
-        <div className="mt-4">
-          <Logout />
-          Logout
+          <div className="text-lg mb-2 font-semibold uppercase tracking-wide text-black">
+            Menu
+          </div>
+          <div
+            className={`cursor-pointer flex items-center mb-4 px-4 py-2 rounded-lg ${
+              expandedItem === "Product"
+                ? "bg-orange-400"
+                : "hover:bg-orange-400"
+            }`}
+            onClick={() => handleItemClick("Product")}
+          >
+            <Inventory style={{ fontSize: 36 }} className="mr-2" />
+            <span className="flex-grow font-semibold">Product</span>
+            {expandedItem === "Product" ? (
+              <ArrowDropUpRounded style={{ fontSize: 48 }} />
+            ) : (
+              <ArrowRightRounded style={{ fontSize: 48 }} />
+            )}
+          </div>
+          {expandedItem === "Product" && (
+            <ul className="pl-2 space-y-2">
+              <li>
+                <Link to="/Product-image" className="block text-lg">
+                  <ChevronRight /> Product image
+                </Link>
+              </li>
+              <li>
+                <Link to="/product-variant" className="block text-lg">
+                  <ChevronRight /> Product variant
+                </Link>
+              </li>
+              <li>
+                <Link to="/brand" className="block text-lg">
+                  <ChevronRight /> Brand
+                </Link>
+              </li>
+              <li>
+                <Link to="/color" className="block text-lg">
+                  <ChevronRight /> Color
+                </Link>
+              </li>
+              <li>
+                <Link to="/size" className="block text-lg">
+                  <ChevronRight /> Size
+                </Link>
+              </li>
+            </ul>
+          )}
+          <div
+            className={`cursor-pointer flex items-center mb-4 px-4 py-2 rounded-lg ${
+              expandedItem === "Orrder"
+                ? "bg-orange-400"
+                : activeItem === "Orrder" // Sử dụng activeItem để xác định lớp CSS cho mục active
+                ? "bg-orange-400"
+                : "hover:bg-orange-400"
+            }`}
+            onClick={() => handleItemClick("Orrder")}
+          >
+            <ShoppingCart style={{ fontSize: 36 }} className="mr-2" />
+            <Link
+              to="/order"
+              className="flex-grow font-semibold"
+              onClick={() => setExpandedItem("")}
+            >
+              Order
+            </Link>
+          </div>
+          <div
+            className={`cursor-pointer flex items-center mb-4 px-4 py-2 rounded-lg ${
+              expandedItem === "Account"
+                ? "bg-orange-400"
+                : activeItem === "Account" // Sử dụng activeItem để xác định lớp CSS cho mục active
+                ? "bg-orange-400"
+                : "hover:bg-orange-400"
+            }`}
+            onClick={() => handleItemClick("Account")}
+          >
+            <AccountBox style={{ fontSize: 36 }} className="mr-2" />
+            <span className="flex-grow font-semibold">
+              {" "}
+              <Link to="/account" onClick={() => setExpandedItem("")}>
+                Account
+              </Link>
+            </span>
+          </div>
+          <div
+            className={`cursor-pointer flex items-center mb-4 px-4 py-2 rounded-lg ${
+              expandedItem === "Analytics"
+                ? "bg-orange-400"
+                : "hover:bg-orange-400"
+            }`}
+            onClick={() => handleItemClick("Analytics")}
+          >
+            <Analytics style={{ fontSize: 36 }} className="mr-2" />
+            <span className="flex-grow font-semibold">Analytics</span>
+          </div>
+          <div className="mt-4 cursor-pointer flex items-center px-4 py-2 rounded-lg hover:bg-orange-400">
+            <Logout style={{ fontSize: 36 }} className="mr-2" />
+            <span className="font-semibold">Logout</span>
+          </div>
+          <div
+            onClick={toggleSidebar}
+            className="mt-4 lg:hidden cursor-pointer bg-red-500 rounded-lg flex items-center px-4 py-2 hover:bg-red-600"
+          >
+            <Backspace style={{ fontSize: 36 }} className="mr-2" />
+            <span className="font-semibold">Close</span>
+          </div>
         </div>
       </div>
     </div>

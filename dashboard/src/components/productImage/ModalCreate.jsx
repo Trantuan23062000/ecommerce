@@ -11,7 +11,7 @@ const ModalCreate = (props) => {
     status: "",
     category: "",
     brandId: "",
-    sale:"",
+    sale: "",
     images: [],
     imagePreviews: [], // Array to store image previews
   });
@@ -91,7 +91,7 @@ const ModalCreate = (props) => {
     dataSened.append("category", formData.category);
     dataSened.append("brandId", formData.brandId);
     const response = await CreateProductImage(dataSened);
-    
+
     //console.log(response);
     if (response && response.data && response.data.EC === 0) {
       toast.success(response.data.message);
@@ -218,7 +218,7 @@ const ModalCreate = (props) => {
                   </div>
                   <div>
                     <label className="block mb-1 text-sm font-medium text-gray-900 dark:text-white">
-                    Status
+                      Status
                     </label>
                     <select
                       name="status"
@@ -228,9 +228,7 @@ const ModalCreate = (props) => {
                       <option selected>Choose status</option>
                       <option value="Stocking">Stocking</option>
                       <option value="Out of stock">Out of stock</option>
-                      <option value="Limited goods">
-                      Limited goods
-                      </option>
+                      <option value="Limited goods">Limited goods</option>
                     </select>
                   </div>
                   <div>
@@ -248,13 +246,11 @@ const ModalCreate = (props) => {
                       <option selected>Choose category</option>
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
-                      <option value="All">
-                        Both men and women
-                      </option>
+                      <option value="All">Both men and women</option>
                     </select>
                   </div>
-                  </div>
-                  
+                </div>
+
                 <div className="grid gap-4 mb-4 sm:grid-cols-1">
                   <div className="flex items-center justify-center w-full">
                     {formData.imagePreviews.map((preview, index) => (
@@ -305,22 +301,18 @@ const ModalCreate = (props) => {
                   ></textarea>
                 </div>
               </div>
-              <div className="flex flex-row-reverse p-5">
+              <div className="flex justify-end">
                 <button
                   onClick={props.close}
-                  type="button"
-                  className="text-red-500 hover:text-white border border-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-6 py-2 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
+                  className="px-4 py-2 mr-2 text-sm font-medium text-red-500 border border-red-500 rounded-lg hover:bg-red-600 hover:text-white dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
                 >
                   Close
                 </button>
                 <button
-                  onClick={() => {
-                    HandleSubmit();
-                  }}
-                  type="submit"
-                  className="text-blue-600 hover:text-white border border-blue-800 hover:bg-blue-600   focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-6 py-2 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
+                  onClick={HandleSubmit}
+                  className="px-4 py-2 text-sm font-medium text-blue-600 border border-blue-800 rounded-lg hover:bg-blue-600 hover:text-white dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
                 >
-                  UPLOAD
+                  Upload
                 </button>
               </div>
             </div>

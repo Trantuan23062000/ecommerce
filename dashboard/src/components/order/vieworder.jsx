@@ -2,10 +2,6 @@ import { PictureAsPdf } from "@mui/icons-material";
 import React from "react";
 
 const Vieworder = (props) => {
-  const date = new Date(props.data.Order.order_date);
-  const formattedDate = `${date.getDate().toString().padStart(2, "0")}-${(date.getMonth() + 1)
-    .toString()
-    .padStart(2, "0")}-${date.getFullYear()}`;
   const data = props.data.data;
   const order = JSON.parse(data);
   return (
@@ -36,7 +32,7 @@ const Vieworder = (props) => {
                   </div>
                   <div className="space-x-2">
                     <span className="font-bold">Date:</span>
-                    <span>{formattedDate}</span>
+                    <span>{props.data.Order.order_date}</span>
                   </div>
                   <div className="space-x-2">
                     <span className="font-bold">Customer:</span>

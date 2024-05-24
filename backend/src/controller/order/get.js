@@ -1,4 +1,4 @@
-import {getOrder} from "../../services/order/get"
+import {getOrder,getOrdersByDateRange,calculateDailyRevenue,calculateDailyRevenueDaily} from "../../services/order/get"
 const getOrders = async (req, res) => {
     try {
         const {orders } = await getOrder();
@@ -8,6 +8,44 @@ const getOrders = async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }
+
+const filterRateOrders = async (req,res)=>{
+    const { startDate, endDate } = req.query;
+
+    try {
+        // Gọi hàm getOrder và truyền các tham số lọc
+        const { orders } = await getOrdersByDateRange(startDate, endDate);
+
+        // Trả về kết quả cho client
+        res.status(200).json({EC:0,orders });
+    } catch (error) {
+        // Nếu có lỗi, chuyển sang middleware xử lý lỗi
+        next(error);
+    }
+}
+
+const Dailyrevenue = async (req,res) =>{
+    try {
+        const { dailyRevenue } = await calculateDailyRevenue();
+        res.status(200).json({ EC:0,data:dailyRevenue });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+const DailyrevenueDaily = async (req,res) =>{
+    try {
+        const { startDate, endDate } = req.query;
+  
+        if (!startDate || !endDate) {
+          return res.status(400).json({ error: 'Start date and end date are required' });
+        }
+        const { dailyRevenue } = await calculateDailyRevenueDaily(startDate, endDate);
+        res.status(200).json({ EC:0,daily:dailyRevenue });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
 module.exports = {
-    getOrders
+    getOrders,filterRateOrders,Dailyrevenue,DailyrevenueDaily
 };
