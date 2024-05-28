@@ -3,10 +3,9 @@ const filterController = async (req, res) => {
   try {
     // Lấy các tham số từ request body hoặc query string
     const { brandId, sizeId, colorId, minPrice, maxPrice, category } = req.body;
-    const{pageSize,pageNumber} = req.query
 
     // Gom các tham số thành một đối tượng filters
-    const filters = { brandId, sizeId, colorId, minPrice, maxPrice, category };
+    const filters = { brandId, sizeId, colorId, minPrice, maxPrice, category};
 
     // Gọi hàm filterData với filters đã tạo
     const filteredData = await filterData(filters);

@@ -22,7 +22,7 @@ const searchProductAndGetDetails = async (name) => {
             },
             include: [
               {
-                model: db.Products
+                model: db.Products,include:[{model:db.Images},{model:db.Brands}]
               },
               {
                 model: db.productVariant,include:[{model:db.Sizes},{model:db.Colors}]

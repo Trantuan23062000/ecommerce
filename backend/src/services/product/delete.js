@@ -5,18 +5,30 @@ const deleteProductAndImage = async (productId) => {
   try {
     // Tìm kiếm thông tin sản phẩm từ cơ sở dữ liệu
     const product = await db.Products.findByPk(productId);
-    //console.log(product);
-    
+
     // Kiểm tra xem sản phẩm có tồn tại không
     if (!product) {
-      throw new Error("Product not found");
+      return { EC: 1, message: "Product not found" };
+    }
+
+    // Check if the product exists in the Details table
+    const productDetailsExists = await db.Detail.findOne({
+      where: { productId },
+    });
+
+    if (productDetailsExists) {
+      return {
+        EC: 1,
+        message: "The product already exists in the details. Please delete the details to delete the product !",
+      };
     }
 
     // Tìm kiếm thông tin hình ảnh từ cơ sở dữ liệu dựa trên ImageId của sản phẩm
     const image = await db.Images.findByPk(product.imageId, { raw: true });
+
     // Kiểm tra xem hình ảnh có tồn tại không
     if (!image) {
-      throw new Error("Image not found");
+      return { EC: 1, message: "Image not found" };
     }
 
     // Xoá ảnh từ Cloudinary
@@ -44,7 +56,7 @@ const deleteProductAndImage = async (productId) => {
     return { EC: 0, message: "Product and associated images deleted successfully" };
   } catch (error) {
     console.error("Error deleting product and image:", error);
-    throw new Error(error);
+    return { EC: 1, message: "An error occurred while deleting the product and images" };
   }
 };
 

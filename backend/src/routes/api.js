@@ -36,7 +36,7 @@ import {EditSize} from "../controller/size/edit"
 import {SearchSizes} from "../controller/size/search"
 import {DeleteSize} from "../controller/size/delete"
 import {GetListSize} from "../controller/size/getpaginate"
-import {getOrders,filterRateOrders,Dailyrevenue,DailyrevenueDaily} from "../controller/order/get"
+import {getOrders,filterRateOrders,Dailyrevenue,DailyrevenueDaily,TotalByDate} from "../controller/order/get"
 import {getUserOrdersController} from "../controller/order/getOrderById"
 import {loginUserAdmin} from "../controller/auth/loginAdmin"
 import VNPayService from "../services/vnpay/vnpay";
@@ -97,6 +97,7 @@ const ApiRouter = (app) => {
   router.put("/productDetails/update/:detailId",update.updateProductDataController);
   router.delete("/productDetails/delete/:detailId",DeleteDetails.Delete)
   router.get("/productDetails/search",SearchDetails.searchProduct)
+  router.post("/productDetails/search",SearchDetails.searchProductRe)
   //getall
   router.get("/productDetails/getall",product.GetAll);
   //productImage
@@ -149,6 +150,7 @@ const ApiRouter = (app) => {
   router.get('/orders/filterDate',filterRateOrders)
   router.get('/orders/daily-revenue',Dailyrevenue)
   router.get('/orders/daily',DailyrevenueDaily)
+  router.get('/oders/bytotalDate',TotalByDate)
 
   
 

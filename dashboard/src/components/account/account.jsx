@@ -1,4 +1,10 @@
-import { Airplay, ChevronRight, Delete, Edit, Search } from "@mui/icons-material";
+import {
+  Airplay,
+  ChevronRight,
+  Delete,
+  Edit,
+  Search,
+} from "@mui/icons-material";
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../../context/UserContext";
@@ -6,7 +12,7 @@ import { UserContext } from "../../context/UserContext";
 const Account = () => {
   const { data, loading, error, showDatabyIdUser } = useContext(UserContext);
   const [currentPage, setCurrentPage] = useState(1);
-  const [usersPerPage] = useState(5); // Số lượng người dùng hiển thị trên mỗi trang
+  const [usersPerPage] = useState(3); // Số lượng người dùng hiển thị trên mỗi trang
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredUsers = data.filter((user) =>
@@ -42,7 +48,7 @@ const Account = () => {
 
   return (
     <div className="container mx-auto">
-       <div className="py-4 ml-4 flex items-center gap-3">
+      <div className="py-4 ml-4 flex items-center gap-3">
         <span className="text-sm text-gray-400">
           <ChevronRight />
         </span>
@@ -119,48 +125,55 @@ const Account = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map((item, index) => (
-                    <tr key={item.id} className="border-b dark:border-gray-700">
-                      <th
-                        scope="row"
-                        className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                  {filteredUsers
+                    .slice(
+                      (currentPage - 1) * usersPerPage,
+                      currentPage * usersPerPage
+                    )
+                    .map((item, index) => (
+                      <tr
+                        key={item.id}
+                        className="border-b dark:border-gray-700"
                       >
-                        {index + 1}
-                      </th>
-                      <td className="px-4 py-3">{item.id}</td>
-                      <td className="px-4 py-3">{item.username}</td>
-                      <td className="px-4 py-3">{item.email}</td>
-                      <td className="px-4 py-3">
-                        {item.role === 1 ? "User" : "Admin"}
-                      </td>
-                      <td className="px-4 py-3 flex items-center justify-end">
-                        <div className="relative">
-                          <div
-                            onClick={()=>showDatabyIdUser(item.id)}
-                              
-                            className="inline-flex items-center p-0.5 text-sm font-medium text-center text-blue-500 hover:text-blue-800"
-                            type="button"
-                          >
-                            <Link to={{ pathname: `/myorder/${item.id}` }}>
-                              <Airplay />
-                            </Link>
+                        <th
+                          scope="row"
+                          className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                        >
+                          {((currentPage - 1) * usersPerPage) + index + 1}
+                        </th>
+                        <td className="px-4 py-3">{item.id}</td>
+                        <td className="px-4 py-3">{item.username}</td>
+                        <td className="px-4 py-3">{item.email}</td>
+                        <td className="px-4 py-3">
+                          {item.role === 1 ? "User" : "Admin"}
+                        </td>
+                        <td className="px-4 py-3 flex items-center justify-end">
+                          <div className="relative">
+                            <div
+                              onClick={() => showDatabyIdUser(item.id)}
+                              className="inline-flex items-center p-0.5 text-sm font-medium text-center text-blue-500 hover:text-blue-800"
+                              type="button"
+                            >
+                              <Link to={{ pathname: `/myorder/${item.id}` }}>
+                                <Airplay />
+                              </Link>
+                            </div>
+                            <div
+                              className="inline-flex items-center p-0.5 text-sm font-medium text-center text-yellow-500 hover:text-yellow-800"
+                              type="button"
+                            >
+                              <Edit />
+                            </div>
+                            <div
+                              className="inline-flex items-center p-0.5 text-sm font-medium text-center text-red-500 hover:text-red-900"
+                              type="button"
+                            >
+                              <Delete />
+                            </div>
                           </div>
-                          <div
-                            className="inline-flex items-center p-0.5 text-sm font-medium text-center text-yellow-500 hover:text-yellow-800"
-                            type="button"
-                          >
-                            <Edit />
-                          </div>
-                          <div
-                            className="inline-flex items-center p-0.5 text-sm font-medium text-center text-red-500 hover:text-red-900"
-                            type="button"
-                          >
-                            <Delete />
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
@@ -170,7 +183,8 @@ const Account = () => {
             >
               <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
                 {/* Thông tin trang */}
-                Page {currentPage} of {Math.ceil(data.length / usersPerPage)}
+                Page {currentPage} of{" "}
+                {Math.ceil(filteredUsers.length / usersPerPage)}
               </span>
               <ul className="inline-flex items-stretch -space-x-px">
                 {/* Các nút chuyển trang */}
@@ -197,7 +211,7 @@ const Account = () => {
                   </button>
                 </li>
                 {Array.from({
-                  length: Math.ceil(data.length / usersPerPage),
+                  length: Math.ceil(filteredUsers.length / usersPerPage),
                 }).map((_, index) => (
                   <li key={index}>
                     <button
@@ -212,6 +226,7 @@ const Account = () => {
                     </button>
                   </li>
                 ))}
+
                 <li>
                   <button
                     onClick={() => paginate(currentPage + 1)}

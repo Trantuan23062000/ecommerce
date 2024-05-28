@@ -1,4 +1,3 @@
-// App.js
 import React from "react";
 import Navbar from "./layout/navbar";
 import Sidebar from "./layout/siderbar"; // Đã sửa thành Sidebar
@@ -23,22 +22,24 @@ const App = () => {
       <Router>
         <div className="flex flex-col min-h-screen">
           <Navbar />
-          <Toaster/>
+          <Toaster />
           <div className="flex flex-1 flex-grow transition-all duration-300">
-          <Sidebar/>
-            <Routes>
-              <Route exact path="/" element={<Main />} />
-              <Route exact path="/product-image" element={<ProductImage/>}/>
-              <Route exact path="/brand" element={<Brand/>}/>
-              <Route exact path="/product-variant" element={<ProductVariant/>}/>
-              <Route exact path="/color" element={<Color/>}/>
-              <Route exact path="/size" element={<Size/>}/>
-              <Route exact path="/order" element={<Order/>}/>
-              <Route exact path="/account" element={<Account/>}/>
-              <Route exact path="/login" element={<Login/>}/>
-              <Route exact path="/myorder/:userId" element={<Show/>}/>
-              <Route />
-            </Routes>
+            <Sidebar />
+            <div className="flex-1 overflow-auto p-4"> {/* Thêm lớp overflow-auto để tạo cuộn */}
+              <Routes>
+                <Route exact path="/" element={<Main />} />
+                <Route exact path="/product-image" element={<ProductImage />} />
+                <Route exact path="/brand" element={<Brand />} />
+                <Route exact path="/product-variant" element={<ProductVariant />} />
+                <Route exact path="/color" element={<Color />} />
+                <Route exact path="/size" element={<Size />} />
+                <Route exact path="/order" element={<Order />} />
+                <Route exact path="/account" element={<Account />} />
+                <Route exact path="/login" element={<Login />} />
+                <Route exact path="/myorder/:userId" element={<Show />} />
+                <Route />
+              </Routes>
+            </div>
           </div>
         </div>
       </Router>

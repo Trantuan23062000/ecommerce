@@ -18,5 +18,22 @@ const searchProduct = async (req, res, next) => {
       next(error);
     }
   };
-  
-  module.exports = { searchProduct };
+  const searchProductRe = async (req, res, next) => {
+    try {
+      const { name } = req.body;
+      
+      // Gọi hàm searchProductAndGetDetails từ service
+      const result = await searchProductAndGetDetails(name);
+      
+      // Kiểm tra xem kết quả có tồn tại hay không
+      if (result === null) {
+        return res.status(201).json({ EC: 1, message: 'Không tìm thấy sản phẩm nào phù hợp.' });
+      }
+      
+      // Trả về kết quả thành công
+      res.status(200).json({ EC: 0, Details: result });
+    } catch (error) {
+      next(error);
+    }
+  };
+  module.exports = { searchProduct,searchProductRe };

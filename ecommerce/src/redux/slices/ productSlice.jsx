@@ -1,34 +1,74 @@
-import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { GetProduct } from "../../api/shop/getproduct";
 import toast from "react-hot-toast";
+import { FilterData } from "../../api/shop/filter";
+import { SearchProduct } from "../../api/shop/getproduct";
 
 export const fetchData = createAsyncThunk(
-  'products/fetchData',
+  "products/fetchData",
   async ({ currentPage, currentLimit }, { dispatch }) => {
     try {
       const response = await GetProduct(currentPage, currentLimit);
       if (response && response.data && response.data.EC === 0) {
-        dispatch(setData(response.data.productDetails));
-        dispatch(setTotalPages(response.data.totalPages));
+        dispatch(setData(response.data.product));
       } else {
-        toast.error("no data !");
+        toast.error("No data!");
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
-      toast.error("Error fetching data !");
+      console.error("Error fetching data:", error);
+      toast.error("Error fetching data!");
+    }
+  }
+);
+
+export const fetchFilterData = createAsyncThunk(
+  "products/fetchFilterData",
+  async (filters, { dispatch }) => {
+    try {
+      const response = await FilterData(filters);
+      if (response && response.data && response.data.EC === 0) {
+        dispatch(setData(response.data.data));
+        dispatch(setKeyFilter(filters))
+      } else {
+        toast.error("No data!");
+      }
+    } catch (error) {
+      console.error("Error fetching filtered data:", error);
+      toast.error("Error fetching filtered data!");
+    }
+  }
+);
+
+export const fetchFilterDataSearch = createAsyncThunk(
+  "products/fetchFilterDataSearch",
+  async ({ name }, { dispatch }) => {
+    try {
+      const response = await SearchProduct({ name });
+      if (response && response.data && response.data.EC === 0) {
+        dispatch(setData(response.data.Details));
+      } else {
+        dispatch(setSearchKeyword("No data!"));
+      }
+    } catch (error) {
+      console.error("Error fetching search data:", error);
+      toast.error("Error fetching search data!");
     }
   }
 );
 
 export const productSlice = createSlice({
-  name: 'products',
+  name: "products",
   initialState: {
     data: [],
     totalPages: 0,
     currentPage: 1,
     currentLimit: 6,
-    selectedProduct: null, // Thêm trường selectedProduct vào initialState và khởi tạo là null
+    selectedProduct: null,
+    searchResults: [],
+    searchKeyword: '',
+    keyFilter : []
   },
+
   reducers: {
     setData: (state, action) => {
       state.data = action.payload;
@@ -48,10 +88,28 @@ export const productSlice = createSlice({
     setFilterData: (state, action) => {
       state.filterData = action.payload;
     },
+    setSearchResults: (state, action) => {
+      state.searchResults = action.payload;
+    },
+    setSearchKeyword: (state, action) => { // New action for setting search keyword
+      state.searchKeyword = action.payload;
+    },
+    setKeyFilter:(state,action)=>{
+      state.keyFilter = action.payload
+    }
   },
 });
 
-export const { setData, setTotalPages, setCurrentPage,setCurrentLimit, setSelectedProduct,setFilterData } = productSlice.actions;
+export const {
+  setData,
+  setTotalPages,
+  setCurrentPage,
+  setCurrentLimit,
+  setSelectedProduct,
+  setFilterData,
+  setSearchResults,setSearchKeyword,setKeyFilter
+} = productSlice.actions;
+
 export const selectProductData = (state) => state.products.data;
 export const selectTotalPages = (state) => state.products.totalPages;
 export const selectCurrentPage = (state) => state.products.currentPage;

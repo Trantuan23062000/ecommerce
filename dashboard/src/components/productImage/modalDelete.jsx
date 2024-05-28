@@ -10,7 +10,7 @@ const ModalDelete = (props) => {
       props.close();
       props.fetch();
     } else {
-      toast.error("No delete peoduct !");
+      toast.error(response.data.message);
       props.show();
     }
   };

@@ -16,3 +16,7 @@ export const Dailytotal = async () =>{
 export const FilterDaylyTotal = async(startDate,endDate) =>{
     return await axios.get(`http://localhost:8000/api/v1/orders/daily?startDate=${startDate}&endDate=${endDate}`)
 }
+
+export const DatabyDate =async (startDate,endDate) =>{
+   return await axios.get(`http://localhost:8000/api/v1/oders/bytotalDate?startDate=${startDate}&endDate=${endDate}`)
+}

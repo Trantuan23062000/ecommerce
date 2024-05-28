@@ -10,6 +10,15 @@ export const UserProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [dataOrder, setDataOrder] = useState([]);
 
+  // Thay đổi trạng thái dựa trên dữ liệu trong localStorage khi tải ứng dụng
+  useEffect(() => {
+    const savedDataOrder = localStorage.getItem("dataOrder");
+    if (savedDataOrder) {
+      setDataOrder(JSON.parse(savedDataOrder));
+    }
+    fetchUser()
+  }, []);
+
   const fetchUser = async () => {
     try {
       const response = await getUsers();
@@ -26,18 +35,14 @@ export const UserProvider = ({ children }) => {
       const response = await getOrderbyId(userId);
       if (response && response.data && response.data.EC === 0) {
         setDataOrder(response.data.data);
-        // Save dataOrder to local storage
+        // Lưu dữ liệu vào localStorage
         localStorage.setItem("dataOrder", JSON.stringify(response.data.data));
       }
     } catch (error) {
       toast.error("Failed to fetch data");
     }
   };
-
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
+  
   return (
     <UserContext.Provider value={{ data, loading, error, dataOrder, setDataOrder, showDatabyIdUser }}>
       {children}

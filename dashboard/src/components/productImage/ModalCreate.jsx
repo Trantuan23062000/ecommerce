@@ -229,6 +229,7 @@ const ModalCreate = (props) => {
                       <option value="Stocking">Stocking</option>
                       <option value="Out of stock">Out of stock</option>
                       <option value="Limited goods">Limited goods</option>
+                      <option value="Best saler">Best saler</option>
                     </select>
                   </div>
                   <div>

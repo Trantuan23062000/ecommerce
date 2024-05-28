@@ -15,7 +15,7 @@ import { Link } from "react-router-dom";
 import { useSidebar } from "../context/SidebarContext";
 
 const Sidebar = () => {
-  const [expandedItem, setExpandedItem] = useState("");
+  const [expandedItem, setExpandedItem] = useState("Dashboard");
   const { isSidebarOpen, toggleSidebar } = useSidebar();
   const [activeItem, setActiveItem] = useState("");
 

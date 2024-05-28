@@ -36,6 +36,7 @@ const Register = async (username, phone, password, email) => {
       email,
       password: hashedPassword,
       isVerified: 0,
+      role: 1,
       verificationToken: resetToken
     });
 

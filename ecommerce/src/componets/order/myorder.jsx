@@ -69,7 +69,7 @@ const Myorder = () => {
             currentOrders.map((item, index) => (
               <div
                 key={index}
-                className="main-box border mt-8 border-gray-200 rounded-xl pt-6 max-w-xl max-lg:mx-auto lg:max-w-full"
+                className="main-box border mt-8 border-gray-500 rounded-xl pt-6 max-w-xl max-lg:mx-auto lg:max-w-full"
               >
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between px-6 pb-6 border-b border-gray-200">
                   <div className="data">
@@ -98,9 +98,6 @@ const Myorder = () => {
                       </span>
                     </p>
                   </div>
-                  <button className="rounded-full py-3 px-7 font-semibold text-sm leading-7 text-white bg-indigo-600 max-lg:mt-5 shadow-sm shadow-transparent transition-all duration-500 hover:bg-indigo-700 hover:shadow-indigo-400">
-                    Track Your Order
-                  </button>
                 </div>
                 {JSON.parse(item.data).map((product, productIndex) => (
                   <div

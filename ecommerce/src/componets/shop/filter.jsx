@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchFilterData,
   fetchBrand,
   fetchColor,
   fetchSize,
 } from "../../redux/slices/filterReducer";
-
+import { fetchFilterData } from "../../redux/slices/ productSlice";
 import CategoryCheckbox from "./CategoryCheckbox";
 import BrandCheckbox from "./BrandCheckbox";
 import PriceFilter from "./PriceFilter";
@@ -16,12 +15,13 @@ const Filter = () => {
   const brands = useSelector((state) => state.filter.brands) || [];
   const sizes = useSelector((state) => state.filter.sizes) || [];
   const colors = useSelector((state) => state.filter.colors) || [];
-  const [selectedBrandId, setSelectedBrandId] = useState(false);
-  const [selectedSizeId, setSelectedSizeId] = useState(false);
-  const [selectedColorId, setSelectedColorId] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(false);
+  const [selectedBrandId, setSelectedBrandId] = useState(null);
+  const [selectedSizeId, setSelectedSizeId] = useState(null);
+  const [selectedColorId, setSelectedColorId] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedMinPrice, setSelectedMinPrice] = useState(null);
   const [selectedMaxPrice, setSelectedMaxPrice] = useState(null);
+  const [isCleared, setIsCleared] = useState(true);
 
   useEffect(() => {
     dispatch(fetchBrand());
@@ -31,7 +31,7 @@ const Filter = () => {
 
   useEffect(() => {
     handleFilter();
-    // eslint-disable-next-line
+     // eslint-disable-next-line
   }, [
     selectedBrandId,
     selectedSizeId,
@@ -44,63 +44,57 @@ const Filter = () => {
   const handleFilter = () => {
     const filterData = {};
 
-    // Thêm sizeId vào filterData nếu selectedSizeId có giá trị
     if (selectedSizeId) {
       filterData.sizeId = selectedSizeId;
     }
-
-    // Thêm colorId vào filterData nếu selectedColorId có giá trị
     if (selectedColorId) {
       filterData.colorId = selectedColorId;
     }
-
-    // Thêm category vào filterData nếu selectedCategory có giá trị
     if (selectedCategory) {
       filterData.category = selectedCategory;
     }
-
     if (selectedBrandId) {
       filterData.brandId = selectedBrandId;
     }
-
-    // Thêm price vào filterData nếu selectedMinPrice và selectedMaxPrice có giá trị
     if (selectedMinPrice && selectedMaxPrice) {
       filterData.minPrice = selectedMinPrice;
       filterData.maxPrice = selectedMaxPrice;
     }
 
-    dispatch(fetchFilterData(filterData));
+    if (
+      !selectedSizeId &&
+      !selectedColorId &&
+      !selectedCategory &&
+      !selectedBrandId &&
+      !selectedMinPrice &&
+      !selectedMaxPrice
+    ) {
+      setIsCleared(true);
+    } else {
+      setIsCleared(false);
+      dispatch(fetchFilterData(filterData));
+    }
   };
 
   const handleChangeBrand = (id) => {
-    //console.log("Selected Brand ID:", id);
     setSelectedBrandId(id);
-    handleFilter(); // Gọi hàm handleFilter khi brand thay đổi
   };
 
   const handleChangeSize = (id) => {
-    //log("Selected Size ID:", id);
     setSelectedSizeId(id);
-    handleFilter(); // Gọi hàm handleFilter khi size thay đổi
   };
 
   const handleChangeColor = (id) => {
-    //console.log("Selected Color ID:", id);
     setSelectedColorId(id);
-    handleFilter(); // Gọi hàm handleFilter khi color thay đổi
   };
 
   const handleChangeCategory = (category) => {
-    //console.log("Selected Category:", category);
     setSelectedCategory(category);
-    handleFilter(); // Gọi hàm handleFilter khi category thay đổi
   };
 
   const handleChangePrice = (minPrice, maxPrice) => {
-    //console.log("Selected price:", minPrice, maxPrice);
     setSelectedMinPrice(minPrice);
     setSelectedMaxPrice(maxPrice);
-    handleFilter(); // Gọi hàm handleFilter khi giá cả thay đổi
   };
 
   const handleClear = () => {
@@ -110,21 +104,20 @@ const Filter = () => {
     setSelectedCategory(null);
     setSelectedMinPrice(null);
     setSelectedMaxPrice(null);
-    handleFilter(); // Gọi hàm handleFilter khi xóa bộ lọc
+    setIsCleared(true);
+    dispatch(fetchFilterData({}));
   };
 
   return (
-    <div>
+    <div className="filter-container">
       <div className="text-center">
         <div className="col-span-1 bg-white px-4 pb-6 shadow rounded overflow-hiddenb hidden md:block">
           <div className="divide-y divide-gray-200 space-y-5">
-            {/* Categories */}
             <div>
               <h3 className="text-xl text-gray-800 mb-3 uppercase font-medium">
                 Categories
               </h3>
               <div className="space-y-2">
-                {/* Category checkboxes */}
                 <CategoryCheckbox
                   id="Male"
                   label="Male"
@@ -150,57 +143,43 @@ const Filter = () => {
                 Price
               </h3>
               <div className="space-y-2">
-                {/* Category checkboxes */}
                 <PriceFilter
                   id="<100"
                   label="0-99$"
-                  checked={
-                    selectedMinPrice === "0" && selectedMaxPrice === "99"
-                  }
+                  checked={selectedMinPrice === "0" && selectedMaxPrice === "99"}
                   onChange={() => handleChangePrice("0", "99")}
                 />
                 <PriceFilter
                   id="99-299"
                   label="99-299$"
-                  checked={
-                    selectedMinPrice === "99" && selectedMaxPrice === "299"
-                  }
+                  checked={selectedMinPrice === "99" && selectedMaxPrice === "299"}
                   onChange={() => handleChangePrice("99", "299")}
                 />
                 <PriceFilter
                   id="299-499"
                   label="299-499$"
-                  checked={
-                    selectedMinPrice === "299" && selectedMaxPrice === "499"
-                  }
+                  checked={selectedMinPrice === "299" && selectedMaxPrice === "499"}
                   onChange={() => handleChangePrice("299", "499")}
                 />
                 <PriceFilter
                   id="500-900"
                   label="499-899$"
-                  checked={
-                    selectedMinPrice === "499" && selectedMaxPrice === "899"
-                  }
+                  checked={selectedMinPrice === "499" && selectedMaxPrice === "899"}
                   onChange={() => handleChangePrice("499", "899")}
                 />
                 <PriceFilter
                   id="899-1099"
                   label="899-1099$"
-                  checked={
-                    selectedMinPrice === "899" && selectedMaxPrice === "1099"
-                  }
+                  checked={selectedMinPrice === "899" && selectedMaxPrice === "1099"}
                   onChange={() => handleChangePrice("899", "1099")}
                 />
               </div>
             </div>
-
-            {/* Brands */}
             <div className="pt-4">
               <h3 className="text-xl text-gray-800 mb-3 uppercase font-medium">
                 Brands
               </h3>
               <div className="space-y-2">
-                {/* Brand checkboxes */}
                 {brands.map((item) => (
                   <BrandCheckbox
                     key={item.id}
@@ -212,14 +191,11 @@ const Filter = () => {
                 ))}
               </div>
             </div>
-
-            {/* Sizes */}
             <div className="pt-4">
               <h3 className="text-xl text-gray-800 mb-3 uppercase font-medium">
                 Sizes
               </h3>
               <div className="grid grid-cols-5 md:grid-cols-5 gap-2 justify-center items-center">
-                {/* Size selectors */}
                 {sizes.map((item) => (
                   <div key={item.id} className="size-selector">
                     <input
@@ -239,14 +215,11 @@ const Filter = () => {
                 ))}
               </div>
             </div>
-
-            {/* Colors */}
             <div className="pt-4">
               <h3 className="text-xl text-gray-800 mb-3 uppercase font-medium">
                 Colors
               </h3>
               <div className="grid grid-cols-5 md:grid-cols-5 gap-2 justify-center items-center">
-                {/* Color selectors */}
                 {colors.map((item) => (
                   <div key={item.id} className="color-selector">
                     <input
@@ -265,13 +238,15 @@ const Filter = () => {
                 ))}
               </div>
             </div>
-
             <button
-              onClick={handleClear}
-              className="w-full bg-black h-6 font-bold text-yellow-300 hover:text-red-500 rounded-xl hover:bg-yelow-500"
+              onClick={isCleared ? handleFilter : handleClear}
+              className="w-full bg-black h-10 font-bold text-yellow-300 hover:text-red-500 rounded-xl hover:bg-gray-500 mt-4"
             >
-              {" "}
-              Clear filter
+              {isCleared ? (
+                <span className="text-yellow-500 font-semibold">Apply Filters</span>
+              ) : (
+                <span className="text-red-500 font-semibold">Clear Filters</span>
+              )}
             </button>
           </div>
         </div>

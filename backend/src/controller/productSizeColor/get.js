@@ -17,4 +17,6 @@ const getProductDetailsController = async (req, res, next) => {
   }
 };
 
+
+
 module.exports = { getProductDetailsController };

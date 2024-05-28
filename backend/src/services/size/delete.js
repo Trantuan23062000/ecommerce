@@ -1,20 +1,41 @@
 import db from "../../models";
 
 const deleteSize = async (SizeId) => {
-    try {
-      const sizes = await db.Sizes.findByPk(SizeId);
-      if (!sizes) {
-        console.log("Size not found");
-      } 
-      await sizes.destroy();
+  try {
+    const size = await db.Sizes.findByPk(SizeId);
+    if (!size) {
       return {
-        EM: "OK delete",
-        EC: 0,
+        EM: "Size not found",
+        EC: 1,
       };
-    } catch (error) {
-      console.log(error);
     }
-  };
+
+    // Check if the size exists in the productVariant table
+    const productVariantExists = await db.productVariant.findOne({
+      where: { SizeId },
+    });
+
+    if (productVariantExists) {
+      return {
+        EM: "Size is associated with a product variant. Please remove the associated product variant first.",
+        EC: 1,
+      };
+    }
+
+    await size.destroy();
+    return {
+      EM: "Size deleted successfully",
+      EC: 0,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      EM: "An error occurred while deleting the size",
+      EC: 1,
+    };
+  }
+};
+
 module.exports = {
-  deleteSize
-}
+  deleteSize,
+};

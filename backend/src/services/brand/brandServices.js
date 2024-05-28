@@ -118,16 +118,36 @@ const deleteBrand = async (BrandID) => {
   try {
     const brand = await db.Brands.findByPk(BrandID);
     if (!brand) {
-      console.log("Brand not found");
-    } 
+      return {
+        EM: "Brand not found",
+        EC: 1,
+      };
+    }
+
+    // Check if the brand exists in the product table
+    const productExists = await db.Products.findOne({
+      where: { BrandID },
+    });
+
+    if (productExists) {
+      return {
+        EM: "Brand is associated with a product. Please remove the associated product first.",
+        EC: 1,
+      };
+    }
+
     await brand.destroy();
     return {
-      EM: "OK delete",
+      EM: "Brand deleted successfully",
       EC: 0,
       brand,
     };
   } catch (error) {
     console.log(error);
+    return {
+      EM: "An error occurred while deleting the brand",
+      EC: 1,
+    };
   }
 };
 

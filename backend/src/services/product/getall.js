@@ -13,7 +13,7 @@ const Product = async() =>{
               
             },
             {
-              model: db.productVariant,
+              model: db.productVariant,include:[{model:db.Sizes},{model:db.Colors}]
             },
             
           ],

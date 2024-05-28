@@ -120,6 +120,39 @@ const calculateDailyRevenueDaily = async (startDate, endDate) => {
   }
 };
 
+const calculateTotalRevenueByDateRange = async (startDate, endDate) => {
+  const convertDateFormat = (dateString) => {
+    const [day, month, year] = dateString.split("/");
+    return `${year}-${month}-${day}`;
+  };
+
+  // Convert date strings to ISO format
+  const startDateISO = convertDateFormat(startDate);
+  const endDateISO = convertDateFormat(endDate);
+
+  // Add one day to the end date to include it in the range
+  const endDatePlusOne = new Date(endDateISO);
+  endDatePlusOne.setDate(endDatePlusOne.getDate() + 1);
+  const endDatePlusOneISO = endDatePlusOne.toISOString().split("T")[0];
+
+  try {
+    const totalRevenue = await db.OrderDetails.findOne({
+      where: {
+        createdAt: {
+          [Op.between]: [startDateISO, endDatePlusOneISO],
+        },
+      },
+      attributes: [[fn("SUM", col("total")), "totalRevenue"],[fn("COUNT", col("id")), "totalOrders"],],
+      raw: true,
+    });
+
+    return { totalRevenue: totalRevenue.totalRevenue || 0,totalOrders: totalRevenue.totalOrders || 0, }; // Return 0 if no revenue is found
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
 // Hàm format ngày
 const formatDate = (dateString) => {
   const dateParts = dateString.split("-");
@@ -133,5 +166,5 @@ module.exports = {
   getOrder,
   getOrdersByDateRange,
   calculateDailyRevenue,
-  calculateDailyRevenueDaily,
+  calculateDailyRevenueDaily,calculateTotalRevenueByDateRange
 };

@@ -36,4 +36,5 @@ const getProductDetails = async (pageNumber, pageSize) => {
 };
 
 
+
 module.exports = { getProductDetails };

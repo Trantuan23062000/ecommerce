@@ -11,7 +11,7 @@ const Order = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10); // Items per page
+  const [itemsPerPage] = useState(6); // Items per page
 
   const fetchData = async (start, end, page = 1) => {
     const response = await GetOders({

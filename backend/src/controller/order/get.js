@@ -1,4 +1,4 @@
-import {getOrder,getOrdersByDateRange,calculateDailyRevenue,calculateDailyRevenueDaily} from "../../services/order/get"
+import {getOrder,getOrdersByDateRange,calculateDailyRevenue,calculateDailyRevenueDaily,calculateTotalRevenueByDateRange} from "../../services/order/get"
 const getOrders = async (req, res) => {
     try {
         const {orders } = await getOrder();
@@ -46,6 +46,21 @@ const DailyrevenueDaily = async (req,res) =>{
         res.status(500).json({ error: error.message });
     }
 }
+
+const TotalByDate = async (req,res) =>{
+    try {
+        const { startDate, endDate } = req.query;
+  
+        if (!startDate || !endDate) {
+          return res.status(400).json({ error: 'Start date and end date are required' });
+        }
+        const { totalRevenue,totalOrders } = await calculateTotalRevenueByDateRange(startDate, endDate);
+        res.status(200).json({ EC:0,totalRevenue,totalOrders});
+        
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
 module.exports = {
-    getOrders,filterRateOrders,Dailyrevenue,DailyrevenueDaily
+    getOrders,filterRateOrders,Dailyrevenue,DailyrevenueDaily,TotalByDate
 };
