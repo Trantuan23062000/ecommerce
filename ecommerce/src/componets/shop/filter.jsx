@@ -1,27 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchBrand,
-  fetchColor,
-  fetchSize,
-} from "../../redux/slices/filterReducer";
-import { fetchFilterData } from "../../redux/slices/ productSlice";
-import CategoryCheckbox from "./CategoryCheckbox";
-import BrandCheckbox from "./BrandCheckbox";
-import PriceFilter from "./PriceFilter";
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchBrand, fetchColor, fetchSize ,setSelectedBrand,setSelectedCategory,setSelectedColor,setSelectedMaxPrice,setSelectedMinPrice,setSelectedSize } from '../../redux/slices/filterReducer';
+import { fetchFilterData, setKeyFilter, resetClearFiltersFlag } from '../../redux/slices/ productSlice';
+import CategoryCheckbox from './CategoryCheckbox';
+import BrandCheckbox from './BrandCheckbox';
+import PriceFilter from './PriceFilter';
 
 const Filter = () => {
   const dispatch = useDispatch();
   const brands = useSelector((state) => state.filter.brands) || [];
   const sizes = useSelector((state) => state.filter.sizes) || [];
   const colors = useSelector((state) => state.filter.colors) || [];
-  const [selectedBrandId, setSelectedBrandId] = useState(null);
-  const [selectedSizeId, setSelectedSizeId] = useState(null);
-  const [selectedColorId, setSelectedColorId] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedMinPrice, setSelectedMinPrice] = useState(null);
-  const [selectedMaxPrice, setSelectedMaxPrice] = useState(null);
-  const [isCleared, setIsCleared] = useState(true);
+  const clearFilters = useSelector((state) => state.products.clearFilters); // Get the clearFilters flag from the state
+  const selectedBrand = useSelector((state) => state.filter.selectedBrand);
+  const selectedSize = useSelector((state) => state.filter.selectedSize);
+  const selectedColor = useSelector((state) => state.filter.selectedColor);
+  const selectedCategory = useSelector((state) => state.filter.selectedCategory);
+  const selectedMinPrice = useSelector((state) => state.filter.selectedMinPrice);
+  const selectedMaxPrice = useSelector((state) => state.filter.selectedMaxPrice);
 
   useEffect(() => {
     dispatch(fetchBrand());
@@ -31,88 +27,69 @@ const Filter = () => {
 
   useEffect(() => {
     handleFilter();
-     // eslint-disable-next-line
+    // eslint-disable-next-line 
   }, [
-    selectedBrandId,
-    selectedSizeId,
-    selectedColorId,
-    selectedCategory,
-    selectedMinPrice,
-    selectedMaxPrice,
+    selectedBrand, selectedSize, selectedColor, selectedCategory, selectedMinPrice, selectedMaxPrice
   ]);
 
+  useEffect(() => {
+    if (clearFilters) {
+      handleClear();
+      dispatch(resetClearFiltersFlag());  // Reset the clearFilters flag
+    }
+    // eslint-disable-next-line 
+  }, [clearFilters, dispatch]);
+
   const handleFilter = () => {
-    const filterData = {};
+    const filterData = {
+      brandId: selectedBrand?.id,
+      sizeId: selectedSize?.id,
+      colorId: selectedColor?.id,
+      category: selectedCategory,
+      minPrice: selectedMinPrice,
+      maxPrice: selectedMaxPrice,
+    };
 
-    if (selectedSizeId) {
-      filterData.sizeId = selectedSizeId;
-    }
-    if (selectedColorId) {
-      filterData.colorId = selectedColorId;
-    }
-    if (selectedCategory) {
-      filterData.category = selectedCategory;
-    }
-    if (selectedBrandId) {
-      filterData.brandId = selectedBrandId;
-    }
-    if (selectedMinPrice && selectedMaxPrice) {
-      filterData.minPrice = selectedMinPrice;
-      filterData.maxPrice = selectedMaxPrice;
-    }
-
-    if (
-      !selectedSizeId &&
-      !selectedColorId &&
-      !selectedCategory &&
-      !selectedBrandId &&
-      !selectedMinPrice &&
-      !selectedMaxPrice
-    ) {
-      setIsCleared(true);
-    } else {
-      setIsCleared(false);
-      dispatch(fetchFilterData(filterData));
-    }
+    dispatch(setKeyFilter(filterData));
+    dispatch(fetchFilterData(filterData));
   };
 
-  const handleChangeBrand = (id) => {
-    setSelectedBrandId(id);
+  const handleChangeBrand = (brand) => {
+    dispatch(setSelectedBrand(brand));
+  };
+  
+
+  const handleChangeSize = (size) => {
+    dispatch(setSelectedSize(size));
   };
 
-  const handleChangeSize = (id) => {
-    setSelectedSizeId(id);
-  };
-
-  const handleChangeColor = (id) => {
-    setSelectedColorId(id);
+  const handleChangeColor = (color) => {
+    dispatch(setSelectedColor(color));
   };
 
   const handleChangeCategory = (category) => {
-    setSelectedCategory(category);
+   dispatch(setSelectedCategory(category));
   };
 
   const handleChangePrice = (minPrice, maxPrice) => {
-    setSelectedMinPrice(minPrice);
-    setSelectedMaxPrice(maxPrice);
+    dispatch(setSelectedMinPrice(minPrice))
+    dispatch(setSelectedMaxPrice(maxPrice));
   };
 
   const handleClear = () => {
-    setSelectedBrandId(null);
-    setSelectedSizeId(null);
-    setSelectedColorId(null);
-    setSelectedCategory(null);
-    setSelectedMinPrice(null);
-    setSelectedMaxPrice(null);
-    setIsCleared(true);
-    dispatch(fetchFilterData({}));
+    dispatch(setSelectedBrand(null))
+    dispatch(setSelectedSize(null))
+    dispatch(setSelectedColor(null))
+    dispatch(setSelectedCategory(null))
+    dispatch(setSelectedMinPrice(null))
+    dispatch(setSelectedMaxPrice(null))
   };
 
   return (
     <div className="filter-container">
       <div className="text-center">
         <div className="col-span-1 bg-white px-4 pb-6 shadow rounded overflow-hiddenb hidden md:block">
-          <div className="divide-y divide-gray-200 space-y-5">
+          <div className="divide-y divide-gray-200 space-y-10">
             <div>
               <h3 className="text-xl text-gray-800 mb-3 uppercase font-medium">
                 Categories
@@ -185,8 +162,8 @@ const Filter = () => {
                     key={item.id}
                     id={item.id}
                     label={item.name}
-                    checked={selectedBrandId === item.id || false}
-                    onChange={() => handleChangeBrand(item.id)}
+                    checked={selectedBrand?.id === item.id || false}
+                    onChange={() => handleChangeBrand(item)}
                   />
                 ))}
               </div>
@@ -202,8 +179,8 @@ const Filter = () => {
                       type="checkbox"
                       id={`size-${item.id}`}
                       className="text-primary focus:ring-0 rounded-sm cursor-pointer sr-only"
-                      checked={selectedSizeId === item.id || false}
-                      onChange={() => handleChangeSize(item.id)}
+                      checked={selectedSize?.id === item.id || false}
+                      onChange={() => handleChangeSize(item)}
                     />
                     <label
                       htmlFor={`size-${item.id}`}
@@ -226,28 +203,18 @@ const Filter = () => {
                       type="checkbox"
                       id={`color-${item.id}`}
                       className="text-blue-500 focus:ring-0 rounded-sm cursor-pointer sr-only"
-                      checked={selectedColorId === item.id || false}
-                      onChange={() => handleChangeColor(item.id)}
+                      checked={selectedColor?.id === item.id || false}
+                      onChange={() => handleChangeColor(item)}
                     />
                     <label
                       htmlFor={`color-${item.id}`}
-                      className="border border-gray-200 rounded-full h-6 w-6 cursor-pointer block"
-                      style={{ backgroundColor: `${item.codeColor}` }}
+                      className="border border-gray-200 rounded-full flex items-center justify-center cursor-pointer shadow-sm h-10 w-10"
+                      style={{ backgroundColor: item.codeColor }}
                     ></label>
                   </div>
                 ))}
               </div>
             </div>
-            <button
-              onClick={isCleared ? handleFilter : handleClear}
-              className="w-full bg-black h-10 font-bold text-yellow-300 hover:text-red-500 rounded-xl hover:bg-gray-500 mt-4"
-            >
-              {isCleared ? (
-                <span className="text-yellow-500 font-semibold">Apply Filters</span>
-              ) : (
-                <span className="text-red-500 font-semibold">Clear Filters</span>
-              )}
-            </button>
           </div>
         </div>
       </div>

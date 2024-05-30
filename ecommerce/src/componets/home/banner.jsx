@@ -33,7 +33,7 @@ const Banner = () => {
         setContent({
           title: "Best collection Update summer trends",
           buttonText: "Shop Now",
-          linkTo: "/shop", 
+          linkTo: "/shop",
         });
         break;
       case 1:
@@ -68,27 +68,27 @@ const Banner = () => {
 
   return (
     <div
-    className="relative bg-cover bg-no-repeat bg-center py-36 md:py-96  "
-    style={{
-      backgroundImage: `url('${images[currentImageIndex]}')`,
-    }}
-  >
-    <div className="absolute inset-x-0 bottom-0 pb-8 text-center">
-      <h1 className="text-6xl md:text-6xl text-yellow-300 font-medium mb-4 capitalize transform transition-transform duration-500 hover:-translate-y-1">
-        {/* {content.title} */}
-      </h1>
-      <div className="inline-block">
+      className="relative bg-cover bg-no-repeat bg-center py-36 md:py-96  "
+      style={{
+        backgroundImage: `url('${images[currentImageIndex]}')`,
+      }}
+    >
+      <div className="absolute inset-x-0 bottom-0 pb-8 text-center">
+        <h1 className="text-6xl md:text-6xl text-yellow-300 font-medium mb-4 capitalize transform transition-transform duration-500 hover:-translate-y-1">
+          {/* {content.title} */}
+        </h1>
         <div className="inline-block">
-          <button
-            className="bg-black border-2 text-white px-6 md:px-12 uppercase font-serif hover:text-yellow-400 py-3 md:py-6 font-medium rounded-xl transform transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110"
-            onClick={handleButtonClick}
-          >
-            {content.buttonText}
-          </button>
+          <div className="inline-block">
+            <button
+              className="bg-black border-2 text-white px-6 md:px-12 uppercase font-serif hover:text-yellow-400 py-3 md:py-6 font-medium rounded-xl transform transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110"
+              onClick={handleButtonClick}
+            >
+              {content.buttonText}
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
   );
 };
 

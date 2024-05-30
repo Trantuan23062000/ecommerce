@@ -13,7 +13,7 @@ const BrandCheckbox = ({ id, label, checked, onChange }) => {
       <label htmlFor={id} className="text-gray-600 ml-3 cursor-pointer">
         {label}
       </label>
-      <div className="ml-auto text-gray-600 text-sm">(15)</div>
+      <div className="ml-auto text-gray-600 text-sm"></div>
     </div>
   );
 };

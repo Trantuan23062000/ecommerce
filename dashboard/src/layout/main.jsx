@@ -266,10 +266,10 @@ const Main = () => {
           )}
         </div>
       </div>
-
+      
       <div className="pt-8">
-        <h2 className="text-2xl font-semibold mb-4">Total Revenue Linechar</h2>
-        {dataFilter.totalAmount !== undefined  ? (
+        <h2 className="text-2xl font-semibold mb-4">Total Revenue Barchar</h2>
+        {dataFilter.totalRevenue === 0  ? (
           <div className="bg-white rounded-lg shadow-lg p-6">
           <p>No data available</p>
         </div>
@@ -282,7 +282,7 @@ const Main = () => {
 
       <div className="pt-8">
         <h2 className="text-2xl font-semibold mb-4">Total Revenue Linechar</h2>
-        {dataFilter.totalAmount !== undefined  ? (
+        {dataFilter.totalRevenue === 0 ? (
           <div className="bg-white rounded-lg shadow-lg p-6">
           <p>No data available</p>
         </div>

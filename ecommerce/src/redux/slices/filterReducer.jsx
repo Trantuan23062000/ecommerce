@@ -2,10 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 import { GetBrands } from "../../api/shop/getproduct";
 import { GetSize } from "../../api/shop/getsize";
 import { GetColor } from "../../api/shop/getcolor";
-import { FilterData} from "../../api/shop/filter";
-import { setTotalPages } from "./ productSlice"; 
-import { SearchProduct } from "../../api/shop/getproduct";
-import toast from "react-hot-toast";
 
 export const filterSlice = createSlice({
   name: "filter",
@@ -16,6 +12,12 @@ export const filterSlice = createSlice({
     filterData:[],
     loading: false,
     error: null,
+    selectedBrand: null,
+    selectedSize: null,
+    selectedColor: null,
+    selectedCategory: null,
+    selectedMinPrice: null,
+    selectedMaxPrice: null,
 
   },
   reducers: {
@@ -70,8 +72,32 @@ export const filterSlice = createSlice({
       state.loading =false
       state.filterData = action.payload
     },
-
-
+    setSelectedBrand: (state, action) => {
+      state.selectedBrand = action.payload;
+    },
+    setSelectedSize: (state, action) => {
+      state.selectedSize = action.payload;
+    },
+    setSelectedColor: (state, action) => {
+      state.selectedColor = action.payload;
+    },
+    setSelectedCategory: (state, action) => {
+      state.selectedCategory = action.payload;
+    },
+    setSelectedMinPrice: (state, action) => {
+      state.selectedMinPrice = action.payload;
+    },
+    setSelectedMaxPrice: (state, action) => {
+      state.selectedMaxPrice = action.payload;
+    },
+    clearAllFilters: (state) => {
+      state.selectedBrand = null;
+      state.selectedSize = null;
+      state.selectedColor = null;
+      state.selectedCategory = null;
+      state.selectedMinPrice = null;
+      state.selectedMaxPrice = null;
+    },
 
   },
 });
@@ -88,7 +114,7 @@ export const {
   fetchColorsFailure,
   fetchFilterDataRequest,
   fetchFilterDataSuccess,
-  fetchFilterDataFailure,
+  fetchFilterDataFailure,setSelectedBrand,setSelectedCategory,setSelectedMaxPrice,setSelectedMinPrice,setSelectedSize,setSelectedColor,clearAllFilters
 
   // export các reducers cho các actions khác
 } = filterSlice.actions;
@@ -134,41 +160,6 @@ export const fetchColor = () => async (dispatch) => {
     }
   } catch (error) {
     dispatch(fetchColorsFailure(error.message));
-  }
-};
-
-
-export const fetchFilterData = ({ brandId, sizeId, colorId, minPrice, maxPrice, category, pageSize, pageNumber }) => async (dispatch) => {
-  try {
-    dispatch(fetchFilterDataRequest());
-    const response = await FilterData({ brandId, sizeId, colorId, minPrice, maxPrice, category, pageSize, pageNumber });
-    if (response && response.data && response.data.EC === 0) {
-      dispatch(fetchFilterDataSuccess(response.data.data));
-      // Cập nhật số trang mới
-      const totalPages = Math.ceil(response.data.data.length / pageSize);
-      dispatch(setTotalPages(totalPages));
-    } else {
-      dispatch(fetchFilterDataFailure("Failed to fetch filter data"));
-    }
-  } catch (error) {
-    dispatch(fetchFilterDataFailure(error.message));
-  }
-};
-
-export const fetchFilterDataSearch = ({ name, pageSize, pageNumber }) => async (dispatch) => {
-  try {
-    dispatch(fetchFilterDataRequest());
-    const response = await SearchProduct({ name, pageSize, pageNumber });
-    if (response && response.data && response.data.EC === 0) {
-      dispatch(fetchFilterDataSuccess(response.data.Details));
-      // Cập nhật số trang mới
-      const totalPages = Math.ceil(response.data.Details.length / pageSize);
-      dispatch(setTotalPages(totalPages));
-    } else {
-      toast.error(response.data.message)
-    }
-  } catch (error) {
-    dispatch(fetchFilterDataFailure(error.message));
   }
 };
 

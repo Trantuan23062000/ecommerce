@@ -195,44 +195,7 @@ switch (data.Product.category) {
               ))
             )
           )}
-           
           </div>
-          <div className="mt-4 ">
-            <h3 className="text-xl text-gray-800 mb-3 uppercase font-medium">
-              Color
-            </h3>
-            <div className="justify-center text-center items-center flex">
-              {dataProductName.length === 0 ? (
-                <div>Product only color</div>
-              ) : (
-                React.Children.toArray(
-                  dataProductName.map((item) => (
-                    <div
-                      onClick={() => handleProductSelect(item)}
-                      className="color-selector"
-                    >
-                      <Link to={{ pathname: `/product/${item.id}` }}>
-                        <input
-                          type="radio"
-                          name="color"
-                          id="red"
-                          className="hidden"
-                        />
-                        <label
-                          htmlFor="red"
-                          className="border border-gray-200 rounded-full h-6 w-6  cursor-pointer shadow-sm block"
-                          style={{
-                            backgroundColor: `${item.productVariant.Color.codeColor}`,
-                          }}
-                        ></label>
-                      </Link>
-                    </div>
-                  ))
-                )
-              )}
-            </div>
-          </div>
-
           <div className="mt-4">
             <h3 className="text-sm text-gray-800 uppercase mb-1">
               Quantity: {data.productVariant.quantity}

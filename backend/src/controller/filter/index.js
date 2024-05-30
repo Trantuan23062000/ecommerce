@@ -9,9 +9,14 @@ const filterController = async (req, res) => {
 
     // Gọi hàm filterData với filters đã tạo
     const filteredData = await filterData(filters);
-
-    // Trả về kết quả lọc
-    res.json({ EC:0, data: filteredData });
+    if(filteredData){
+      res.json({ EC:0, data: filteredData });
+    }else{
+      res.json({
+        EC:1,data:filteredData  
+      })
+    }
+    
   } catch (error) {
     console.error(error);
     // Trả về thông báo lỗi nếu có lỗi xảy ra

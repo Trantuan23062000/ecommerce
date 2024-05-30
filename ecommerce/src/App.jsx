@@ -26,7 +26,7 @@ function App() {
       <div className="flex flex-col h-screen">
         <Navbar />
         <Toaster /> 
-        <div className="flex flex-1">
+        <div className="flex">
           <div className="flex-1 flex flex-col bg-gray-100 w-full">
             <Routes>
               <Route exact path="/" element={<Home />} />

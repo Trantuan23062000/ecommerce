@@ -28,6 +28,7 @@ export const fetchFilterData = createAsyncThunk(
       const response = await FilterData(filters);
       if (response && response.data && response.data.EC === 0) {
         dispatch(setData(response.data.data));
+        dispatch(setDataFilter(response.data.data))
         dispatch(setKeyFilter(filters))
       } else {
         toast.error("No data!");
@@ -66,12 +67,16 @@ export const productSlice = createSlice({
     selectedProduct: null,
     searchResults: [],
     searchKeyword: '',
-    keyFilter : []
+    keyFilter : [],
+    dataFilter:[]
   },
 
   reducers: {
     setData: (state, action) => {
       state.data = action.payload;
+    },
+    setDataFilter: (state, action) => {
+      state.dataFilter = action.payload;
     },
     setTotalPages: (state, action) => {
       state.totalPages = action.payload;
@@ -96,7 +101,7 @@ export const productSlice = createSlice({
     },
     setKeyFilter:(state,action)=>{
       state.keyFilter = action.payload
-    }
+    },
   },
 });
 
@@ -107,7 +112,7 @@ export const {
   setCurrentLimit,
   setSelectedProduct,
   setFilterData,
-  setSearchResults,setSearchKeyword,setKeyFilter
+  setSearchResults,setSearchKeyword,setKeyFilter,resetClearFiltersFlag,setDataFilter
 } = productSlice.actions;
 
 export const selectProductData = (state) => state.products.data;
@@ -115,5 +120,6 @@ export const selectTotalPages = (state) => state.products.totalPages;
 export const selectCurrentPage = (state) => state.products.currentPage;
 export const selectCurrentLimit = (state) => state.products.currentLimit;
 export const selectSelectedProduct = (state) => state.products.selectedProduct;
+
 
 export default productSlice.reducer;

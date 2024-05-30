@@ -25,8 +25,8 @@ const createPayment = (req, res, next) => {
             description:"Thanh toan hoa don"
         }],
         redirect_urls: {
-            return_url: 'http://localhost:3001/oder-success', // URL để chuyển về khi thanh toán thành công
-            cancel_url: 'http://localhost:3001/checkout' // URL để chuyển về khi thanh toán bị hủy bỏ
+            return_url: 'http://localhost:3000/oder-success', // URL để chuyển về khi thanh toán thành công
+            cancel_url: 'http://localhost:3000/checkout' // URL để chuyển về khi thanh toán bị hủy bỏ
         }
     };
   
