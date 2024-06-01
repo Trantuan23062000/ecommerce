@@ -240,31 +240,38 @@ const Main = () => {
           </h2>
           <p>Total accounts all time: {countUsers} Accounts</p>
         </div>
-        <div className="bg-gray-100 text-black rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <ReviewsOutlined style={{ fontSize: 48, marginRight: 12 }} />
-            Total Revenue
-          </h2>
-          {dataFilter.totalAmount !== undefined ? (
-            <>no data</>
-          ) : dataFilter.totalRevenue !== undefined ? (
-            <>
-              <p>Total startDate to endDate: {dataFilter.totalRevenue} $</p>
-              <p>
-                To VND:{" "}
-                {(dataFilter.totalRevenue * 25457).toLocaleString("vi-VN")} VND
-              </p>
-            </>
-          ) : (
-            <>
-              <p>Total Revenue all time: {coutOrders.totalAmount} $</p>
-              <p>
-                To VND:{" "}
-                {(coutOrders.totalAmount * 25457).toLocaleString("vi-VN")} VND
-              </p>
-            </>
-          )}
-        </div>
+       <div className="bg-gray-100 text-black rounded-lg shadow-lg p-6">
+  <h2 className="text-xl font-semibold mb-4 flex items-center">
+    <ReviewsOutlined style={{ fontSize: 48, marginRight: 12 }} />
+    Total Revenue
+  </h2>
+  {dataFilter.totalAmount !== undefined ? (
+    <>no data</>
+  ) : dataFilter.totalRevenue !== undefined ? (
+    <>
+      <p>Total startDate to endDate: {dataFilter.totalRevenue} $</p>
+      <p>
+        To VND:{" "}
+        {(dataFilter.totalRevenue * 25457).toLocaleString("vi-VN")} VND
+      </p>
+    </>
+  ) : (
+    <>
+      <p>Total Revenue all time: {coutOrders.totalAmount} $</p>
+      <p>
+        To VND:{" "}
+        {(coutOrders.totalAmount * 25457).toLocaleString("vi-VN")} VND
+      </p>
+    </>
+  )}
+  {dataFilter.totalRevenue && (
+    <p>
+      Two decimal digits:{" "}
+      {dataFilter.totalRevenue.toString().includes(".") ? dataFilter.totalRevenue.toString().split(".")[1].slice(0, 2) : "00"}
+    </p>
+  )}
+</div>
+
       </div>
       
       <div className="pt-8">

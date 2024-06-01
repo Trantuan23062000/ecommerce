@@ -14,6 +14,7 @@ import Order from "./components/order/order";
 import Login from "./components/auth/login";
 import Account from "./components/account/account";
 import Show from "./components/account/show";
+import Banner from "./components/banner/Banner";
 
 
 const App = () => {
@@ -34,6 +35,7 @@ const App = () => {
                 <Route exact path="/color" element={<Color />} />
                 <Route exact path="/size" element={<Size />} />
                 <Route exact path="/order" element={<Order />} />
+                <Route exact path="/banner" element={<Banner />} />
                 <Route exact path="/account" element={<Account />} />
                 <Route exact path="/login" element={<Login />} />
                 <Route exact path="/myorder/:userId" element={<Show />} />

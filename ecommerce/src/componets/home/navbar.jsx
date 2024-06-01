@@ -1,5 +1,11 @@
 import React, { useEffect, useReducer, useState } from "react";
-import { FaBars, FaShoppingCart, FaSearch, FaTrash, FaUser } from "react-icons/fa";
+import {
+  FaBars,
+  FaShoppingCart,
+  FaSearch,
+  FaTrash,
+  FaUser,
+} from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import SearchShop from "../search/searchShop";
@@ -122,12 +128,12 @@ const Navbar = () => {
 
   return (
     <div>
-      <nav className="bg-black p-3 px-4 py-4 sticky top-0 z-50">
+      <nav className="bg-black p-3 px-4 py-6 z-50 fixed top-0 left-0 w-full shadow-md ">
         <div className="flex justify-between items-center">
           <div className="flex-shrink-0">
             <Link to="/">
               <img
-                src="/images/logo.png"
+                src="https://res.cloudinary.com/tuantran2306/image/upload/v1717172037/logo_peurlm.png"
                 alt="logo"
                 className="w-20 h-10 rounded-lg"
               />
@@ -135,24 +141,41 @@ const Navbar = () => {
           </div>
           {!isMobile && (
             <div className="hidden md:flex justify-center w-full space-x-6">
-              <Link to="/shop" className="text-white hover:text-yellow-300 text-lg font-semibold">
-                SHOP
+              <Link
+                to="/all-product"
+                className="text-white hover:text-yellow-300 text-lg font-semibold"
+              >
+                ALL PRODUCT
               </Link>
-              <Link to="/about" className="text-white hover:text-yellow-300 text-lg font-semibold">
+              <Link
+                to="/about"
+                className="text-white hover:text-yellow-300 text-lg font-semibold"
+              >
                 ABOUT
               </Link>
-              <Link to="/contact" className="text-white hover:text-yellow-300 text-lg font-semibold">
+              <Link
+                to="/contact"
+                className="text-white hover:text-yellow-300 text-lg font-semibold"
+              >
                 CONTACT
               </Link>
               {user && (
-                <Link to={`/myorder/${user.id}`} className="text-white hover:text-yellow-300 text-lg font-semibold">
+                <Link
+                  to={`/myorder/${user.id}`}
+                  className="text-white hover:text-yellow-300 text-lg font-semibold"
+                >
                   MY ORDER
                 </Link>
               )}
             </div>
           )}
-          <div className={`flex items-center ${isMobile ? "md:hidden" : "hidden"}`}>
-            <button onClick={showModal} className="text-white hover:text-yellow-300 focus:outline-none">
+          <div
+            className={`flex items-center ${isMobile ? "md:hidden" : "hidden"}`}
+          >
+            <button
+              onClick={showModal}
+              className="text-white hover:text-yellow-300 focus:outline-none"
+            >
               <FaSearch size={24} />
             </button>
             <div className="text-white ml-4 relative">
@@ -165,32 +188,70 @@ const Navbar = () => {
                 )}
               </Link>
             </div>
-            <button onClick={handleDropdownOpen} className="text-white ml-3 focus:outline-none">
+            <button
+              onClick={handleDropdownOpen}
+              className="text-white ml-3 focus:outline-none"
+            >
               <FaBars size={24} />
             </button>
             {isOpen && activeDropdown === "main" && (
-              <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+              <div className="origin-top-right absolute right-0 mt-56 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                 <div className="py-1" role="menu" aria-orientation="vertical">
-                  <Link to="/" onClick={handleDropdownItemClick} className="block px-4 py-2 text-sm text-black hover:bg-black hover:text-white">
+                  <Link
+                    to="/"
+                    className="block px-4 py-2 text-sm text-black hover:bg-black hover:text-white"
+                  >
                     HOME
                   </Link>
-                  <Link to="/about" onClick={handleDropdownItemClick} className="block px-4 py-2 text-sm text-black hover:bg-black hover:text-white">
+                  <Link
+                    to="/about"
+                    className="block px-4 py-2 text-sm text-black hover:bg-black hover:text-white"
+                  >
                     ABOUT
                   </Link>
-                  <Link to="/contact" onClick={handleDropdownItemClick} className="block px-4 py-2 text-sm text-black hover:bg-black hover:text-white">
+                  <Link
+                    to="/contact"
+                    className="block px-4 py-2 text-sm text-black hover:bg-black hover:text-white"
+                  >
                     CONTACT
                   </Link>
-                  {user && (
-                    <Link to={`/myorder/${user.id}`} onClick={handleDropdownItemClick} className="block px-4 py-2 text-sm text-black hover:bg-black hover:text-white">
-                      MY ORDER
-                    </Link>
+
+                  {user ? (
+                    <>
+                      <Link
+                        to={`/myorder/${user.id}`}
+                        className="block px-4 py-2 text-sm text-black hover:bg-black hover:text-white"
+                      >
+                        MY ORDER
+                      </Link>
+                      <Link
+                        onClick={() => handleLogout()}
+                        className="block px-4 py-2 text-sm text-black hover:bg-black hover:text-white"
+                      >
+                        LOGOUT
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/login"
+                        className="block px-4 py-2 text-sm text-black hover:bg-black hover:text-white"
+                      >
+                        LOGIN
+                      </Link>
+                    </>
                   )}
                 </div>
               </div>
             )}
           </div>
-          <div className={`flex items-center ${isMobile ? "hidden" : "md:flex"}`}>
-            <button onClick={showModal} className="text-white hover:text-yellow-300 focus:outline-none">
+          <div
+            className={`flex items-center ${isMobile ? "hidden" : "md:flex"}`}
+          >
+            <button
+              onClick={showModal}
+              className="text-white hover:text-yellow-300 focus:outline-none"
+            >
               <FaSearch size={24} />
             </button>
             <div className="text-white ml-4 relative">
@@ -204,7 +265,10 @@ const Navbar = () => {
                 <div className="origin-top-right absolute right-0 mt-2 w-96 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                   <div className="py-4 px-4 font-semibold text-gray-800">
                     {cartItems.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between mb-4">
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between mb-4"
+                      >
                         <div>
                           {item.Product.name} x {item.productVariant.quantity}
                         </div>
@@ -213,22 +277,37 @@ const Navbar = () => {
                           alt="product"
                           className="w-8 h-8 rounded"
                         />
-                        <button onClick={() => handleRemoveFromCart(item)} className="text-red-500 hover:text-red-900">
+                        <button
+                          onClick={() => handleRemoveFromCart(item)}
+                          className="text-red-500 hover:text-red-900"
+                        >
                           <FaTrash />
                         </button>
                       </div>
                     ))}
                   </div>
                   <div className="flex justify-between px-4 pb-4">
-                    <Link to="/cart" onClick={handleDropdownItemClick} className="bg-black text-white px-4 py-2 rounded-lg hover:bg-yellow-500 hover:text-red-500 transition duration-300">
+                    <Link
+                      to="/cart"
+                      onClick={handleDropdownItemClick}
+                      className="bg-black text-white px-4 py-2 rounded-lg hover:bg-yellow-500 hover:text-red-500 transition duration-300"
+                    >
                       Go to Cart
                     </Link>
                     {user ? (
-                      <Link to="/checkout" onClick={handleDropdownItemClick} className="bg-black text-white px-4 py-2 rounded-lg hover:bg-yellow-500 hover:text-red-500 transition duration-300">
+                      <Link
+                        to="/checkout"
+                        onClick={handleDropdownItemClick}
+                        className="bg-black text-white px-4 py-2 rounded-lg hover:bg-yellow-500 hover:text-red-500 transition duration-300"
+                      >
                         Checkout
                       </Link>
                     ) : (
-                      <Link to="/login" onClick={handleDropdownItemClick} className="bg-black text-white px-4 py-2 rounded-lg hover:bg-yellow-500 hover:text-red-500 transition duration-300">
+                      <Link
+                        to="/login"
+                        onClick={handleDropdownItemClick}
+                        className="bg-black text-white px-4 py-2 rounded-lg hover:bg-yellow-500 hover:text-red-500 transition duration-300"
+                      >
                         Login to checkout
                       </Link>
                     )}
@@ -237,22 +316,39 @@ const Navbar = () => {
               )}
             </div>
             <div className="ml-3 relative">
-              <button onClick={() => dispatch({ type: "TOGGLE_MOBILE_DROPDOWN" })} className="text-white hover:text-yellow-300 focus:outline-none">
-                <FaUser size={24} />
+              <button
+                onClick={() => dispatch({ type: "TOGGLE_MOBILE_DROPDOWN" })}
+                className="text-white flex space-x-2 hover:text-yellow-300 focus:outline-none"
+              >
+                <FaUser size={24} />{" "}
+                {user && !isOrderSuccessPage && !isOrderPage && (
+                  <p>{user.username.slice(0, 4)}</p>
+                )}
               </button>
               {activeDropdown === "mobile" && (
-                <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1  ring-black ring-opacity-5">
                   <div className="py-1" role="menu" aria-orientation="vertical">
                     {user ? (
-                      <button onClick={handleLogout} className="block px-4 py-2 text-sm text-black hover:bg-black hover:text-white">
+                      <button
+                        onClick={handleLogout}
+                        className="block px-4 py-2 text-sm text-black hover:bg-black hover:text-white"
+                      >
                         Logout
                       </button>
                     ) : (
                       <>
-                        <Link to="/login" onClick={handleDropdownItemClick} className="block px-4 py-2 text-sm text-black hover:bg-black hover:text-white">
+                        <Link
+                          to="/login"
+                          onClick={handleDropdownItemClick}
+                          className="block px-4 py-2 text-sm text-black hover:bg-black hover:text-white"
+                        >
                           Login
                         </Link>
-                        <Link to="/register" onClick={handleDropdownItemClick} className="block px-4 py-2 text-sm text-black hover:bg-black hover:text-white">
+                        <Link
+                          to="/register"
+                          onClick={handleDropdownItemClick}
+                          className="block px-4 py-2 text-sm text-black hover:bg-black hover:text-white"
+                        >
                           Register
                         </Link>
                       </>
@@ -265,10 +361,10 @@ const Navbar = () => {
         </div>
       </nav>
       {showSearchModal && (
-        <SearchShop close={hideModal} className="transition-opacity duration-300" />
-      )}
-      {user && !isOrderSuccessPage && !isOrderPage && (
-        <p className="text-black text-center m-3">Welcome, {user.username}!</p>
+        <SearchShop
+          close={hideModal}
+          className="transition-opacity duration-300"
+        />
       )}
     </div>
   );

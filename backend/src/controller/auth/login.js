@@ -11,7 +11,7 @@ const loginUser = async (req, res) => {
         res.status(200).json({
           EC: 0,
           message: "Login successful",
-          user: result.user,
+          user: result.users,
           token: result.token
         });
       } else {

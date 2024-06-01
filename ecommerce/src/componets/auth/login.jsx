@@ -25,7 +25,7 @@ const Login = () => {
     try {
       const response = await dispatch(loginUser(email, password)); // Wait for loginUser to finish
       if (response && response.data && response.data.EC === 0) {
-        navigate("/shop"); // Redirect to shop page on successful login
+        navigate("/"); // Redirect to shop page on successful login
       } else {
         // Handle login failure
         console.error("Login failed:", response);
@@ -39,7 +39,7 @@ const Login = () => {
     }
 
   return (
-    <div className="container mx-auto items-center justify-center">
+    <div className="container mx-auto mt-24 items-center justify-center">
       <div className="py-16">
         <div className="max-w-lg bg-gray-50 text-black mx-auto shadow px-6 py-7 rounded-xl overflow-hidden">
           <div>

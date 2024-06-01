@@ -17,7 +17,7 @@ const Footer = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="flex flex-col items-center md:items-start"
         >
-          <img src="/images/logo.png" alt="logo" className="w-24 mb-4" />
+          <img src="https://res.cloudinary.com/tuantran2306/image/upload/v1717172037/logo_peurlm.png" alt="logo" className="w-24 mb-4" />
           <div className="flex justify-center md:justify-start space-x-5">
             <div className="hover:text-yellow-300">
               <FaFacebook size={24} />

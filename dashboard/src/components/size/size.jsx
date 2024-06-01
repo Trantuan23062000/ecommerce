@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   ChevronRight,
   ControlPointRounded,
-  CrisisAlert,
   Delete,
   Edit,
   Search,
@@ -203,12 +202,6 @@ const Brand = () => {
                         <td className="px-4 py-3">{item.description}</td>
                         <td className="px-4 py-3 flex items-center">
                           <div className="relative">
-                            <div
-                              className="inline-flex items-center p-0.5 text-sm font-medium text-center text-blue-500 hover:text-blue-800"
-                              type="button"
-                            >
-                              <CrisisAlert />
-                            </div>
                             <div
                               onClick={() => {
                                 HandleEdit(item);

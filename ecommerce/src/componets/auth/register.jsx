@@ -41,7 +41,7 @@ const Register = () => {
 
   return (
     <div>
-      <div className="container mx-auto items-center justify-center">
+      <div className="container mx-auto items-center justify-center mt-12">
         <div className="py-16">
           <div className="max-w-lg bg-gray-50 text-black mx-auto shadow px-6 py-7 rounded-xl overflow-hidden">
             <div>

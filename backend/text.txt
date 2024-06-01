@@ -7,3 +7,6 @@ npx sequelize-cli model:generate --name Detail --attributes productId:UUID,produ
 
 
 npx sequelize-cli model:generate --name size --attributes size:string,desciption:string
+
+
+npx sequelize model:generate --name Banner --attributes URL:string

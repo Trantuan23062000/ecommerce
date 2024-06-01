@@ -23,7 +23,7 @@ const Product = () => {
 
   
   return (
-    <div className="container mx-auto flex flex-col">
+    <div className="container mx-auto flex flex-col mt-20">
      
       <div className="py-4 flex items-center gap-3">
         <div className="text-black text-base">

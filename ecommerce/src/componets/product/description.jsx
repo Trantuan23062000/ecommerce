@@ -110,7 +110,7 @@ switch (data.Product.category) {
 
   return (
     <div>
-      <div className="border-b sm:mx-auto border-gray-200 pb-2 pt-2 ">
+      <div className="border-b sm:mx-auto border-gray-200 pb-2 pt-12 ">
         <div className="mx-auto text-center items-center justify-center">
           <h2 className="text-3xl font-medium uppercase mb-2 items-center justify-center">
             {data.Product.name}

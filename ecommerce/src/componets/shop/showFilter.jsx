@@ -167,7 +167,7 @@ const ShowFilter = (props) => {
           <CgClose size={24} />
         </button>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
         <div>
           <h4 className="text-lg font-medium text-gray-700 mb-3">
             Selected Tags
@@ -208,7 +208,7 @@ const ShowFilter = (props) => {
               checked={
                 tempSelectedMinPrice === "0" && tempSelectedMaxPrice === "99"
               }
-              onChange={() => handleChangePrice("0", "899")}
+              onChange={() => handleChangePrice("0", "99")}
             />
             <PriceFilter
               id="99-299"

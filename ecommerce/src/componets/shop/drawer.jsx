@@ -6,10 +6,10 @@ import {
   fetchData,
   setTotalPages,
   setSearchKeyword,
-  setKeyFilter,fetchFilterData
+  setKeyFilter,
+  fetchFilterData,
 } from "../../redux/slices/ productSlice";
 import {
-  clearAllFilters,
   setSelectedBrand,
   setSelectedCategory,
   setSelectedColor,
@@ -21,8 +21,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   CgChevronRight,
   CgHeart,
-  CgPushChevronLeft,
-  CgPushChevronRight,
   CgSearch,
   CgShoppingCart,
 } from "react-icons/cg";
@@ -53,9 +51,16 @@ const Drawer = () => {
   const selectedBrand = useSelector((state) => state.filter.selectedBrand);
   const selectedSize = useSelector((state) => state.filter.selectedSize);
   const selectedColor = useSelector((state) => state.filter.selectedColor);
-  const selectedCategory = useSelector((state) => state.filter.selectedCategory);
-  const selectedMinPrice = useSelector((state) => state.filter.selectedMinPrice);
-  const selectedMaxPrice = useSelector((state) => state.filter.selectedMaxPrice);
+  const selectedCategory = useSelector(
+    (state) => state.filter.selectedCategory
+  );
+  const selectedMinPrice = useSelector(
+    (state) => state.filter.selectedMinPrice
+  );
+  const selectedMaxPrice = useSelector(
+    (state) => state.filter.selectedMaxPrice
+  );
+  const [visibleItemCount, setVisibleItemCount] = useState(6);
 
   const handleAddToCart = (item) => {
     const existingItemIndex = cartItems.findIndex(
@@ -91,26 +96,9 @@ const Drawer = () => {
     }
   };
 
-
   const handleProductSelect = (item) => {
     dispatch(setSelectedProduct(item));
     localStorage.setItem("selectedProductDrawer", JSON.stringify(item));
-  };
-
-  const handleChangePage = (pageNumber) => {
-    dispatch(setCurrentPage(pageNumber));
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      dispatch(setCurrentPage(currentPage - 1));
-    }
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      dispatch(setCurrentPage(currentPage + 1));
-    }
   };
 
   const handleModalToggle = () => {
@@ -120,13 +108,6 @@ const Drawer = () => {
   const handleClose = () => {
     setShowModal(false);
   };
- 
-
-  const getPaginatedData = () => {
-    const startIndex = (currentPage - 1) * 6;
-    const endIndex = startIndex + 6;
-    return originalData.slice(startIndex, endIndex);
-  };
 
   const handleClear = () => {
     dispatch(setSearchKeyword(null)); // Clear search keyword when the "Clear" button is pressed
@@ -134,24 +115,25 @@ const Drawer = () => {
   };
 
   const getNameFromId = (key, value, list) => {
-    if (key === "category" && value) {
-      return `${value}`;
-    } else if (key === "minPrice" || key === "maxPrice") {
-      if (list.minPrice && list.maxPrice) {
-        return `Price: ${list.minPrice} - ${list.maxPrice}`;
-      }
-      return "";
-    } else if (key === "brandId") {
-      const item = list.brands.find((item) => item.id === value);
-      return item ? `Brand: ${item.name}` : "";
-    } else if (key === "sizeId") {
-      const item = list.sizes.find((item) => item.id === value);
-      return item ? `Size: ${item.size}` : "";
-    } else if (key === "colorId") {
-      const item = list.colors.find((item) => item.id === value);
-      return item ? `Color: ${item.color}` : "";
-    } else {
-      return "";
+    switch (key) {
+      case "category":
+        return value ? `${value}` : "";
+      case "minPrice":
+      case "maxPrice":
+        return list.minPrice && list.maxPrice
+          ? `Price: ${list.minPrice} - ${list.maxPrice}`
+          : "";
+      case "brandId":
+        const brand = list.brands.find((item) => item.id === value);
+        return brand ? `Brand: ${brand.name}` : "";
+      case "sizeId":
+        const size = list.sizes.find((item) => item.id === value);
+        return size ? `Size: ${size.size}` : "";
+      case "colorId":
+        const color = list.colors.find((item) => item.id === value);
+        return color ? `Color: ${color.color}` : "";
+      default:
+        return "";
     }
   };
 
@@ -169,65 +151,59 @@ const Drawer = () => {
     dispatch(fetchFilterData(filterData));
   };
 
-  
-
   const filterTags =
-  Object.entries(keyFilter).length > 0
-    ? Object.entries(keyFilter).map(([key, value]) => {
-        if ((key === "minPrice" || key === "maxPrice") && keyFilter.minPrice && keyFilter.maxPrice) {
-          return null; // Bỏ qua minPrice và maxPrice nếu cả hai tồn tại
-        }
-        const tagName = getNameFromId(key, value, {
-          brands,
-          sizes,
-          colors,
-          ...keyFilter,
-        });
-        return tagName ? (
-          <span
-            key={key}
-            className="w-44 justify-between rounded-xl bg-white ml-4 text-sm text-black py-3 px-4 border-gray-300 shadow-sm focus:ring-primary focus:border-primary flex items-center"
-          >
-            {tagName}
-            <button
-              onClick={() => removeTag(key)}
-              className="ml-2 text-gray-600 hover:text-gray-800 focus:outline-none"
+    Object.entries(keyFilter).length > 0
+      ? Object.entries(keyFilter).map(([key, value]) => {
+          if (
+            (key === "minPrice" || key === "maxPrice") &&
+            keyFilter.minPrice &&
+            keyFilter.maxPrice
+          ) {
+            return null; // Bỏ qua minPrice và maxPrice nếu cả hai tồn tại
+          }
+          const tagName = getNameFromId(key, value, {
+            brands,
+            sizes,
+            colors,
+            ...keyFilter,
+          });
+          return tagName ? (
+            <span
+              key={key}
+              className="w-44 justify-between rounded-xl bg-white ml-4 text-sm text-black py-3 px-4 border-gray-300 shadow-sm focus:ring-primary focus:border-primary flex items-center"
             >
-              <FaWindowClose size={24} />
-            </button>
-          </span>
-        ) : null;
-      })
-    : [];
-
-
-    if (keyFilter.minPrice && keyFilter.maxPrice) {
-      filterTags.push(
-        <span
-          key="price"
-          className="w-44 justify-between rounded-xl bg-white ml-4 text-sm text-black py-3 px-4 border-gray-300 shadow-sm focus:ring-primary focus:border-primary flex items-center"
+              {tagName}
+              <button
+                onClick={() => removeTag(key)}
+                className="ml-2 text-gray-600 hover:text-gray-800 focus:outline-none"
+              >
+                <FaWindowClose size={24} />
+              </button>
+            </span>
+          ) : null;
+        })
+      : [];
+  if (keyFilter.minPrice && keyFilter.maxPrice) {
+    filterTags.push(
+      <span
+        key="price"
+        className="w-64 justify-between rounded-xl bg-white ml-4 text-sm text-black py-3 px-4 border-gray-300 shadow-sm focus:ring-primary focus:border-primary flex items-center"
+      >
+        {`Price: ${keyFilter.minPrice} - ${keyFilter.maxPrice}`}
+        <button
+          onClick={() => removeTag("minPrice")}
+          className="ml-2 text-gray-600 hover:text-gray-800 focus:outline-none"
         >
-          {`Price: ${keyFilter.minPrice} - ${keyFilter.maxPrice}`}
-          <button
-            onClick={() => removeTag("minPrice")}
-            className="ml-2 text-gray-600 hover:text-gray-800 focus:outline-none"
-          >
-            <FaWindowClose size={24} />
-          </button>
-        </span>
-      );
-    }
-
-
-  const handleClearAllTags = () => {
-    dispatch(clearAllFilters());
-    dispatch(fetchData({ currentPage, currentLimit }));
-  };
+          <FaWindowClose size={24} />
+        </button>
+      </span>
+    );
+  }
 
   const removeTag = (keyToRemove) => {
     // Tạo một bản sao của keyFilter
     const updatedKeyFilter = { ...keyFilter };
-  
+
     if (keyToRemove === "minPrice" || keyToRemove === "maxPrice") {
       // Nếu xóa minPrice hoặc maxPrice, xóa cả hai
       delete updatedKeyFilter["minPrice"];
@@ -237,7 +213,7 @@ const Drawer = () => {
     } else {
       // Xóa key cần xóa khỏi bản sao
       delete updatedKeyFilter[keyToRemove];
-  
+
       // Nếu keyToRemove là 'brandId', đặt selectedBrand về null
       if (keyToRemove === "brandId") {
         dispatch(setSelectedBrand(null));
@@ -252,7 +228,7 @@ const Drawer = () => {
         dispatch(setSelectedCategory(null));
       }
     }
-  
+
     // Dispatch action để cập nhật keyFilter
     dispatch(setKeyFilter(updatedKeyFilter));
   };
@@ -261,7 +237,7 @@ const Drawer = () => {
     dispatch(setCurrentPage(currentPage));
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [totalPages, currentPage, cartItems, dispatch]);
-  
+
   useEffect(() => {
     if (!initialized) {
       const storedCartItems = localStorage.getItem("cartItems");
@@ -277,7 +253,7 @@ const Drawer = () => {
       dispatch(fetchData({ currentPage, currentLimit }));
     }
   }, [currentPage, currentLimit, originalData.length, dispatch]);
-  
+
   useEffect(() => {
     if (originalData.length > 6) {
       const totalPageCount = Math.ceil(originalData.length / 6);
@@ -290,24 +266,37 @@ const Drawer = () => {
   useEffect(() => {
     handleFilter();
     // eslint-disable-next-line
-  }, [selectedBrand, selectedSize, selectedColor, selectedCategory, selectedMinPrice, selectedMaxPrice]);
-  
-  
-  
-  const paginatedData = getPaginatedData();
+  }, [
+    selectedBrand,
+    selectedSize,
+    selectedColor,
+    selectedCategory,
+    selectedMinPrice,
+    selectedMaxPrice,
+  ]);
+
+  const handleLoadMore = () => {
+    if (visibleItemCount >= originalData.length) {
+      setVisibleItemCount(6); // Reset lại số lượng sản phẩm hiển thị ban đầu
+    } else {
+      setVisibleItemCount(visibleItemCount + 6); // Tăng số lượng sản phẩm hiển thị
+    }
+  };
+
+  const paginatedData = originalData.slice(0, visibleItemCount);
 
   return (
     <>
-      <div className="py-4 flex items-center gap-3 ">
+      <div className="py-4 mt-6 flex items-center gap-3 ">
         <div className="text-black text-base">
           <Link to="/">
-            <FaHome />
+            <FaHome size={48} />
           </Link>
         </div>
         <span className="text-sm text-gray-400">
           <CgChevronRight />
         </span>
-        <p className="text-gray-600 font-medium">Shop</p>
+        <p className="text-gray-600 font-medium">ALL PRODUCT</p>
       </div>
       {showModal && <ShowFilter close={handleClose} />}
       <div className="grid grid-cols-1 gap-6 pt-4 pb-6">
@@ -325,7 +314,7 @@ const Drawer = () => {
             </select>
 
             {searchKeyword ? (
-              <div className="w-24 rounded-xl bg-white ml-4 text-sm text-black py-3 px-4 border-gray-300 shadow-sm focus:ring-primary focus:border-primary flex items-center">
+              <div className="w-32 rounded-xl bg-white ml-4 text-sm text-black py-3 px-4 border-gray-300 shadow-sm focus:ring-primary focus:border-primary flex items-center">
                 <span className="flex-grow ">{searchKeyword}</span>
                 <button
                   onClick={handleClear}
@@ -335,24 +324,15 @@ const Drawer = () => {
                 </button>
               </div>
             ) : null}
-            <span className="flex-grow ml-2 flex">
-              {" "}
-             {filterTags}
+            <span className="hidden md:flex-grow ml-2 md:flex">
+              {filterTags}
             </span>
-            <div className="w-44 justify-between rounded-xl bg-white ml-4 text-sm text-black py-3 px-4 border-gray-300 shadow-sm focus:ring-primary focus:border-primary hidden md:block items-center">
-              <button
-                className="flex items-center space-x-2 translate-x-3 hover:text-red-500"
-                onClick={handleClearAllTags}
-              >
-                <span className=" flex-grow">Delete all tag</span><FaWindowClose size={24} /> 
-              </button>
-            </div>
             <div className="flex gap-2 ml-auto py-3 px-4">
               <button
                 className="w-32 translate-x-3 rounded-xl ml-4 bg-black text-white hover:text-yellow-500 py-3 px-4 border-gray-300 shadow-sm focus:ring-primary focus:border-primary items-center "
                 onClick={handleModalToggle}
               >
-               <span>Filter</span> 
+                <span>Filter</span>
               </button>
             </div>
           </div>
@@ -481,58 +461,14 @@ const Drawer = () => {
             )}
           </div>
 
-          {totalPages > 1 && (
-            <div className="flex container mx-auto justify-center items-center sm:justify-between mt-6">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={handlePreviousPage}
-                  className={`flex items-center gap-2 px-6 py-3 font-sans text-xs font-bold text-center uppercase align-middle transition-all rounded-full select-none ${
-                    currentPage === 1
-                      ? "text-gray-400"
-                      : "text-gray-900 hover:bg-gray-900/10 active:bg-gray-900/20"
-                  }`}
-                  type="button"
-                  disabled={currentPage === 1}
-                >
-                  <CgPushChevronLeft />
-                  Previous
-                </button>
-                <div className="flex items-center gap-2">
-                  {Array.from({ length: totalPages }, (_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleChangePage(i + 1)}
-                      disabled={currentPage === i + 1}
-                      className={`relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase shadow-md shadow-gray-900/10 transition-all ${
-                        currentPage === i + 1
-                          ? "bg-gray-900 text-white"
-                          : "bg-gray-300 text-gray-900 hover:shadow-lg hover:shadow-slate-400 focus:opacity-[0.85] active:opacity-[0.85]"
-                      }`}
-                      type="button"
-                    >
-                      <span className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-                        {i + 1}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-                <button
-                  onClick={handleNextPage}
-                  className={`flex items-center gap-2 px-6 py-3 font-sans text-xs font-bold text-center uppercase align-middle transition-all rounded-full select-none ${
-                    currentPage === totalPages
-                      ? "text-gray-400"
-                      : "text-gray-900 hover:bg-gray-900/10 active:bg-gray-900/20"
-                  }`}
-                  type="button"
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                  <CgPushChevronRight />
-                </button>
-              </div>
-              <span>
-                page {currentPage} of {totalPages}
-              </span>
+          {originalData.length > 6 && (
+            <div className="flex justify-center mt-4">
+              <button
+                className="bg-gray-200 w-48 font-semibold text-lg hover:bg-gray-300 px-4 py-2 rounded-xl"
+                onClick={handleLoadMore}
+              >
+                {visibleItemCount >= originalData.length ? "Hide" : "See more"}
+              </button>
             </div>
           )}
         </div>

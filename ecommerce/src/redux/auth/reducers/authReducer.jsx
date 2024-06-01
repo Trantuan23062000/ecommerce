@@ -14,10 +14,15 @@ const authReducer = (state = initialState, action) => {
         token: action.payload.token,
         error: null,
       };
-    case "LOGIN_FAILURE":
+    case "VERIFY_TOKEN_SUCCESS":
       return {
         ...state,
-        error: action.payload,
+        responseMessage: action.payload,
+      };
+    case "VERIFY_TOKEN_FAILURE":
+      return {
+        ...state,
+        responseMessage: action.payload,
       };
     case "LOGOUT":
       return {
@@ -31,10 +36,7 @@ const authReducer = (state = initialState, action) => {
   }
 };
 
-
 export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
 export const selectUser = (state) => state.auth.user;
 
 export default authReducer;
-
-

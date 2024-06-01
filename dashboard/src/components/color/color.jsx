@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   ChevronRight,
   ControlPointRounded,
-  CrisisAlert,
   Delete,
   Edit,
   Search,
@@ -207,12 +206,6 @@ const Color = () => {
                         <td className="px-4 py-3"><div className="px-2 py-2 rounded-full"style={{ backgroundColor: item.codeColor }}></div></td>
                         <td className="px-4 py-3 flex items-center">
                           <div className="relative">
-                            <div
-                              className="inline-flex items-center p-0.5 text-sm font-medium text-center text-blue-500 hover:text-blue-800"
-                              type="button"
-                            >
-                              <CrisisAlert />
-                            </div>
                             <div
                               onClick={() => {
                                 HandleEdit(item);

@@ -1,42 +1,40 @@
 import db from "../../models/index";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
-const checkEmailAndPhoneExistence = async (email) => {
+dotenv.config();
+
+const checkEmailExistence = async (email) => {
   try {
-    let existingUser;
     if (email) {
-      // Kiểm tra xem có người dùng nào đã sử dụng email này chưa
-      existingUser = await db.Users.findOne({ where: { email } });
+      const existingUser = await db.Users.findOne({ where: { email } });
+      return !!existingUser;
     }
-    // Trả về kết quả: true nếu email hoặc số điện thoại đã tồn tại, false nếu không tồn tại
-    return !!existingUser;
+    return false;
   } catch (error) {
-    // Log lỗi nếu có
-    console.error("Error checking email and phone existence:", error);
-    throw new Error(
-      "An error occurred while checking email and phone existence"
-    );
+    console.error("Error checking email existence:", error);
+    throw new Error("An error occurred while checking email existence");
   }
 };
 
 const Login = async (email, password) => {
+  let transaction;
   try {
-    // Kiểm tra xem email hoặc số điện thoại đã tồn tại không
-    const isEmailOrPhoneExist = await checkEmailAndPhoneExistence(email);
-    if (!isEmailOrPhoneExist) {
+    const isEmailExist = await checkEmailExistence(email);
+    if (!isEmailExist) {
       return {
         EC: 1,
-        message: "Email or Phone is not valid",
+        message: "Email is not valid",
       };
     }
 
-    // Tìm người dùng trong cơ sở dữ liệu bằng số điện thoại hoặc email
+    transaction = await db.sequelize.transaction();
+
     const user = await db.Users.findOne({
       where: { email },
+      transaction
     });
-
-    // Kiểm tra xem người dùng có tồn tại không
     if (!user) {
       return {
         EC: 1,
@@ -44,9 +42,6 @@ const Login = async (email, password) => {
       };
     }
 
-    //console.log(user);
-
-    // Kiểm tra mật khẩu
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return {
@@ -55,24 +50,24 @@ const Login = async (email, password) => {
       };
     }
 
-    // Tạo token JWT để xác thực người dùng
-    const token = jwt.sign({ id: user.id, email: user.email }, "secret", {
-      expiresIn: "1h",
+    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
+      expiresIn: "1m",
     });
+    const users = await db.Users.findByPk(user.id,{transaction})
+    await users.update({ verificationToken: token });
 
-    // Trả về thông tin người dùng và token
+    await transaction.commit();
+
     return {
       EC: 0,
-      user,
+      users,
       token,
     };
   } catch (error) {
-    // Log lỗi cho mục đích gỡ lỗi
-    console.log(error);
-
-    // Trả về một thông báo lỗi
+    console.log("Error during login:", error);
+    if (transaction) await transaction.rollback();
     return {
-      success: false,
+      EC: 2,
       message: "An error occurred while logging in",
     };
   }

@@ -34,6 +34,7 @@ export const ResetPasswordU = (newPassword) => async()=>{
     const response = await resetPassword({token,newPassword})
     if(response.data.success === true){
       toast.success(response.data.message)
+      localStorage.removeItem("resetToken")
     }else{
       toast.error(response.data.message)
     }

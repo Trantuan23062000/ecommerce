@@ -74,7 +74,7 @@ const Cart = () => {
 
   const handleDeleteAll = () => {
     dispatch(updateCartdata([])); // Xóa tất cả các mục khỏi giỏ hàng
-    navigate("/shop");
+    navigate("/all-product");
   };
 
   if (!cartItems) {
@@ -85,7 +85,7 @@ const Cart = () => {
     <div className="container mx-auto">
       <div className="py-4 flex items-center justify-between gap-3">
         <div className="bg-black text-white px-8 py-2 font-medium rounded-full uppercase flex items-center gap-2 hover:bg-yellow-500 hover:text-red-500 transition duration-300 ease-in-out transform hover:scale-120">
-          <Link to="/shop">
+          <Link to="/all-product">
             {" "}
             <FaBackspace></FaBackspace>
           </Link>
@@ -101,7 +101,7 @@ const Cart = () => {
 
       <div className="col-span-9 space-y-4">
         {currentItems.length === 0
-          ? navigate("/shop")
+          ? navigate("/all-product")
           : currentItems.map((item) => (
               <div
                 key={item.id}

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   AccountBox,
-  Analytics,
   ArrowDropUpRounded,
   ArrowRightRounded,
   Backspace,
@@ -10,6 +9,7 @@ import {
   Inventory,
   Logout,
   ShoppingCart,
+  WalletRounded,
 } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { useSidebar } from "../context/SidebarContext";
@@ -135,14 +135,14 @@ const Sidebar = () => {
           </div>
           <div
             className={`cursor-pointer flex items-center mb-4 px-4 py-2 rounded-lg ${
-              expandedItem === "Analytics"
+              expandedItem === "Banner"
                 ? "bg-orange-400"
                 : "hover:bg-orange-400"
             }`}
-            onClick={() => handleItemClick("Analytics")}
+            onClick={() => handleItemClick("Banner")}
           >
-            <Analytics style={{ fontSize: 36 }} className="mr-2" />
-            <span className="flex-grow font-semibold">Analytics</span>
+            <WalletRounded style={{ fontSize: 36 }} className="mr-2" />
+            <span className="flex-grow font-semibold"><Link to="/banner">Banner</Link></span>
           </div>
           <div className="mt-4 cursor-pointer flex items-center px-4 py-2 rounded-lg hover:bg-orange-400">
             <Logout style={{ fontSize: 36 }} className="mr-2" />

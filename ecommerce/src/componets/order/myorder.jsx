@@ -56,7 +56,7 @@ const Myorder = () => {
 
   return (
     <div>
-      <section className="py-24 relative">
+      <section className="py-24 relative mt-12">
         <div className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto">
           <h2 className="font-manrope font-bold text-4xl leading-10 text-black text-center">
             Hi {user.username}

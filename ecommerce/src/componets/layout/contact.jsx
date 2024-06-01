@@ -2,7 +2,7 @@ import React from 'react';
 
 const Contact = () => {
     return (
-        <div className="container mx-auto p-6">
+        <div className="container mx-auto p-6 mt-48">
             <div className="col-span-9 shadow rounded-lg px-6 pt-5 pb-7">
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

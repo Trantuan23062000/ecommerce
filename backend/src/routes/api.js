@@ -46,6 +46,17 @@ import {CountProducts} from "../controller/statistics/produtcs"
 import {CountUsers} from "../controller/statistics/user"
 import {getAccount} from "../controller/auth/account"
 
+import {Create} from "../controller/brand/create"
+import {EditBrand} from "../controller/brand/edit"
+import {DeleteBrand} from "../controller/brand/delete"
+import {CreateBanner} from "../controller/banner/create"
+import {EditBanner} from "../controller/banner/edit"
+import {DeleteBanner} from "../controller/banner/delete"
+import {GetAllBanner} from "../controller/banner/get"
+import {verifyTokenWithVerificationToken} from "../controller/auth/checktoken"
+ 
+
+
 const router = express.Router();
 const upload = multer({
   dest: "src/uploads/",
@@ -62,11 +73,20 @@ const upload = multer({
 
 const ApiRouter = (app) => {
   //Brand
-  router.post("/brand/createBrand", BrandController.Create);
+  router.post("/brand/createBrand", upload.single('image'),Create);
   router.get("/brand/getBrand", BrandController.GetListBrand);
-  router.put("/brand/update", BrandController.EditBrand);
-  router.delete("/brand/delete/:id", BrandController.DeleteBrand);
+  router.put("/brand/update/:id",upload.single('image'), EditBrand);
+  router.delete("/brand/delete/:id",DeleteBrand);
   router.get("/brand/search", BrandController.Search);
+
+  router.post("/banner/create", upload.single('image'),CreateBanner);
+  router.put("/banner/update/:id",upload.single('image'), EditBanner);
+  router.delete("/banner/delete/:id",DeleteBanner);
+  router.get("/banner/get",GetAllBanner)
+
+  router.post("/checktoken",verifyTokenWithVerificationToken)
+
+
 
   router.post("/color/create",CreateColors)
   router.put("/color/update",EditColor)

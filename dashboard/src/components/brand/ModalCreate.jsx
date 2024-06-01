@@ -1,179 +1,226 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { CreateBrand, UpdateBrand } from "../../api/brand";
-import { useNavigate } from "react-router-dom";
-import _ from "lodash";
 
 const ModalCreate = (props) => {
   const { action, edit } = props;
-
   const navigate = useNavigate();
-
-  const defaultBrandData = {
-    name: "",
-    description: "",
-  };
-  const [bradData, setBrandData] = useState(defaultBrandData);
+  const defaultBrandData = { name: "", description: "", image: null, URL: "" };
+  const [brandData, setBrandData] = useState(defaultBrandData);
+  const [imagePreview, setImagePreview] = useState("");
+  const [errors, setErrors] = useState({ name: "", description: "" });
 
   useEffect(() => {
     if (props.action === "UPDATE") {
       setBrandData({ ...edit });
+      setImagePreview(edit.imageUrl);
     }
     // eslint-disable-next-line
   }, [props.edit]);
 
   const handleChange = (value, name) => {
-    let _bradData = _.cloneDeep(bradData);
-    _bradData[name] = value;
-    setBrandData(_bradData);
+    setBrandData((prevData) => ({ ...prevData, [name]: value }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: value ? "" : "This field is required",
+    }));
   };
 
-  const error = {
-    name: true,
-    description: true,
-  };
-  const [inError, setInError] = useState(error);
-
-  const checkError = () => {
-    setInError(inError);
-    let arr = ["name", "description"];
-
-    let check = true;
-    for (let i = 0; i < arr.length; i++) {
-      if (!bradData[arr[i]]) {
-        let _inError = _.cloneDeep(error);
-        _inError[arr[i]] = false;
-        setInError(_inError);
-        toast.error(`Empty input ${arr[i]}`);
-        check = false;
-        break;
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("Invalid file type. Please upload an image (jpeg, png, gif).");
+        return;
       }
+  
+      setBrandData((prevData) => ({
+        ...prevData,
+        image: file,
+        URL: URL.createObjectURL(file), // Tạo URL đến tệp
+      }));
+      // Cập nhật trước hình ảnh
+      setImagePreview(URL.createObjectURL(file));
     }
-    return check;
   };
-
+  
   const handleSubmit = async () => {
-    let check = checkError();
-    if (check === true) {
-      let response =
-        action === "CREATE"
-          ? await CreateBrand({
-              ...bradData,
-            })
-          : await UpdateBrand({ ...bradData });
-
-      if (response.data && response.data.EC === 0) {
-        setBrandData({ ...defaultBrandData });
-        toast.success(response.data.mes);
-        props.CloseModalCreate();
-        props.fetchdata();
-        navigate("/brand");
+    // Kiểm tra xem có lỗi nào không
+    const isValid = validateForm();
+    if (isValid) {
+      const formData = new FormData();
+      formData.append("name", brandData.name);
+      formData.append("description", brandData.description);
+      if (brandData.image) {
+        formData.append("image", brandData.image);
       }
-
-      if (response.data && response.data.EC !== 0) {
-        toast.error(response.data.EM);
-        let _inError = _.cloneDeep(error);
-        _inError[response.data.DT] = false;
-        setInError(_inError);
-        props.HandleShowModalCreate();
+  
+      try {
+        const response =
+          action === "CREATE"
+            ? await CreateBrand(formData)
+            : await UpdateBrand(brandData.id, formData);
+  
+        if (response.data.EC === 0) {
+          toast.success(response.data.mes);
+          setBrandData(defaultBrandData);
+          setImagePreview("");
+          props.CloseModalCreate();
+          props.fetchdata();
+          navigate("/brand");
+        } else {
+          toast.error(response.data.EM);
+        }
+        console.log(response);
+      } catch (error) {
+        console.error("Submission error:", error);
+        toast.error("Submission failed");
       }
+    } else {
+      // Nếu có lỗi, hiển thị thông báo lỗi cho người dùng
+      toast.error("Please fill in all required fields.");
     }
   };
+  
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = {};
+  
+    if (!brandData.name) {
+      newErrors.name = "This field is required";
+      valid = false;
+    }
+    if (!brandData.description) {
+      newErrors.description = "This field is required";
+      valid = false;
+    }
+  
+    setErrors(newErrors);
+    return valid;
+  };
+  
+  
+  
 
   return (
-    <div>
-      <div className="overflow-x-hidden p-60 justify-center overflow-y-auto fixed inset-0 z-50 items-center">
-        <div className="relative w-auto mx-auto max-w-3xl">
-          <div className="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
-            <div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {props.action === "CREATE" ? "Create new Brand" : "Edit Brand "}
-              </h3>
-              <button
-                type="button"
-                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                onClick={() => {
-                  props.CloseModalCreate();
-                }}
-              >
-                <svg
-                  aria-hidden="true"
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
-                <span className="sr-only">Close modal</span>
-              </button>
-            </div>
-
+    <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="bg-white rounded-lg w-full max-w-xl p-8 overflow-hidden">
+        <div className="flex justify-between items-center pb-4 mb-4 border-b">
+          <h3 className="text-lg font-semibold text-gray-900">
+            {props.action === "CREATE" ? "Create new Brand" : "Edit Brand "}
+          </h3>
+          <button
+            type="button"
+            className="text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700"
+            onClick={() => props.CloseModalCreate()}
+          >
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+            <span className="sr-only">Close</span>
+          </button>
+        </div>
+        <form>
+          <div className="grid grid-cols-1 gap-4">
             <div>
-              <div className="grid gap-4 mb-4 sm:grid-cols-1" metho>
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Name
-                  </label>
-                  <input
-                    value={bradData.name}
-                    onChange={(event) =>
-                      handleChange(event.target.value, "name")
-                    }
-                    type="text"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Brand..."
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="description"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Description
-                  </label>
-                  <textarea
-                    value={bradData.description}
-                    onChange={(event) =>
-                      handleChange(event.target.value, "description")
-                    }
-                    className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Write Brand description here"
-                  ></textarea>
-                </div>
-              </div>
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={brandData.name}
+                onChange={(event) => handleChange(event.target.value, "name")}
+                className={`mt-1 p-2 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md ${
+                  errors.name ? "border-red-500" : ""
+                }`}
+                placeholder="Enter name"
+              />
+              {errors.name && (
+                <p className="mt-2 text-sm text-red-600">{errors.name}</p>
+              )}
             </div>
-            <div className="flex flex-row-reverse p-5">
-              <button
-                onClick={() => {
-                  props.CloseModalCreate();
-                }}
-                type="button"
-                className="text-red-600 hover:text-white border border-red-800 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-10 py-4 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
+            <div>
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-gray-700"
               >
-                Close
-              </button>
-              <button
-                onClick={() => {
-                  handleSubmit();
-                }}
-                type="submit"
-                className="text-blue-600 hover:text-white border border-blue-800 hover:bg-blue-600   focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-10 py-4 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
+                Description
+              </label>
+              <textarea
+                id="description"
+                value={brandData.description}
+                onChange={(event) =>
+                  handleChange(event.target.value, "description")
+                }
+                className={`mt-1 p-2 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md ${
+                  errors.description ? "border-red-500" : ""
+                }`}
+                placeholder="Enter description"
+              />
+              {errors.description && (
+                <p className="mt-2 text-sm text-red-600">
+                  {errors.description}
+                </p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="image"
+                className="block text-sm font-medium text-gray-700"
               >
-                {props.action === "CREATE" ? "Submit" : "Update"}
-              </button>
+                Image
+              </label>
+              <input
+                type="file"
+                id="image"
+                onChange={handleFileChange}
+                className="mt-1 p-2 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md"
+              />
+              {props.action === "CREATE" ? (
+                // If creating new, display the image preview
+                imagePreview ? (
+                  <img
+                    src={imagePreview}
+                    alt="Preview" // Add alt prop with meaningful text or an empty string
+                    className="mt-2 h-40 w-full object-cover"
+                  />
+                ) : null
+              ) : // If not creating new, display the image from the URL field of the edit data
+              brandData && brandData.URL ? (
+                <img
+                  src={brandData.URL}
+                  alt="Preview" // Add alt prop with meaningful text or an empty string
+                  className="mt-2 h-40 w-full object-cover"
+                />
+              ) : null}
             </div>
           </div>
+        </form>
+        <div className="flex justify-end mt-4">
+          <button
+            onClick={handleSubmit}
+            className="px-4 py-2 bg-indigo-600 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            {props.action === "CREATE" ? "Create Brand" : "Save Changes"}
+          </button>
         </div>
       </div>
-      <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
     </div>
   );
 };

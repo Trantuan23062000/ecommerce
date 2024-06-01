@@ -58,7 +58,7 @@ const ResetPassword = async (token, newPassword) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
     user.password = hashedPassword;
-    user.resetToken = null; // Xóa mã thông báo đã sử dụng
+    user.resetPasswordToken = null; // Xóa mã thông báo đã sử dụng
     await user.save();
 
     return {

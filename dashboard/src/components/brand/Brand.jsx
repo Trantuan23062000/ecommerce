@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   ChevronRight,
   ControlPointRounded,
-  CrisisAlert,
   Delete,
   Edit,
   Search,
@@ -30,6 +29,7 @@ const Brand = () => {
   const [currentLimit] = useState(5);
   //paginate
 
+
   const [key, setKey] = useState("");
 
   const fetch = async () => {
@@ -54,7 +54,7 @@ const Brand = () => {
   const cofirmModalDelete = async () => {
     let response = await DeletBrand(edit.id);
     if (response && response.data.EC === 0) {
-      toast.success(response.data.EM);
+      toast.success(response.data.mes);
       setShowDelete(false);
       fetchdata();
     } else {
@@ -185,6 +185,9 @@ const Brand = () => {
                       Description
                     </th>
                     <th scope="col" className="px-4 py-3">
+                      Image
+                    </th>
+                    <th scope="col" className="px-4 py-3">
                       Actions
                     </th>
                   </tr>
@@ -201,14 +204,24 @@ const Brand = () => {
                         </th>
                         <td className="px-4 py-3">{item.name}</td>
                         <td className="px-4 py-3">{item.description}</td>
+                        <td className="px-4 py-3">
+                              <img
+                                src={item.URL}
+                                style={{
+                                  width: "30px",
+                                  height: "auto",
+                                  margin: "1px",
+                                }}
+                                alt=""
+                                
+                              />
+                         
+                        </td>
+                        <td className="px-4 py-3 flex">
+                          
+                        </td>
                         <td className="px-4 py-3 flex items-center">
                           <div className="relative">
-                            <div
-                              className="inline-flex items-center p-0.5 text-sm font-medium text-center text-blue-500 hover:text-blue-800"
-                              type="button"
-                            >
-                              <CrisisAlert />
-                            </div>
                             <div
                               onClick={() => {
                                 HandleEdit(item);

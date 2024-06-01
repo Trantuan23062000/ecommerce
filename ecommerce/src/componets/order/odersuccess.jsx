@@ -34,30 +34,30 @@ const Odersuccess = () => {
     dispatch(removeAllItems());
   }, [dispatch]);
   return (
-    <div className="bg-gray-100 container mx-auto h-full flex justify-center rounded-xl items-center">
-    <motion.div
-      initial={{ opacity: 0, y: -50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg"
-    >
-      <h2 className="text-3xl font-bold text-center mb-4 text-black">
-        Order Confirmed!
-      </h2>
-      <p className="text-lg text-gray-700 mb-6 text-center">
-        Thank {user.username} for your order. Your order has been successfully placed.
-      </p>
-      <div className="flex justify-center">
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-black text-white font-semibold py-2 px-4 rounded-xl focus:outline-none focus:ring-2 hover:text-yellow-500"
-        >
-          <Link to="/shop">Continue Shopping</Link>
-        </motion.div>
-      </div>
-    </motion.div>
-  </div>
+    <div className="bg-gray-100 mt-48 flex justify-center items-center">
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg"
+      >
+        <h2 className="text-3xl font-bold text-center mb-4 text-black">
+          Order Confirmed!
+        </h2>
+        <p className="text-lg text-gray-700 mb-6 text-center">
+          Thank {user.username} for your order. Your order has been successfully placed.
+        </p>
+        <div className="flex justify-center">
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-black text-white font-semibold py-2 px-4 rounded-xl focus:outline-none focus:ring-2 hover:text-yellow-500"
+          >
+            <Link to="/shop">Continue Shopping</Link>
+          </motion.div>
+        </div>
+      </motion.div>
+    </div>
   );
 };
 

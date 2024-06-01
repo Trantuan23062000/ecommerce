@@ -1,23 +1,5 @@
 import BrandServices from "../../services/brand/brandServices";
 
-const Create = async (req, res) => {
-  try {
-    let data = await BrandServices.CreateBrand(req.body);
-    return res.status(200).json({
-      mes: data.success,
-      EM: data.EM,
-      EC: data.EC,
-      DT: data.brand,
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      EM: "Server Error",
-      EC: -1,
-      DT: "",
-    });
-  }
-};
 
 const EditBrand = async (req, res) => {
   try {
@@ -107,7 +89,6 @@ const Search = async (req, res) => {
 };
 
 module.exports = {
-  Create,
   GetListBrand,
   EditBrand,
   DeleteBrand,
