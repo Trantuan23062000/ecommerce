@@ -27,6 +27,40 @@ const getOrder = async () => {
   }
 };
 
+const getOrderCancel = async () =>{
+  try {
+    const data = await db.CancelOrder.findAll({})
+   return {data}
+  } catch (error) {
+    console.log(error);
+  }
+   
+}
+
+const getOrdersByDateRangeCancel = async (startDate, endDate) => {
+  try {
+    // Định dạng lại ngày theo chuẩn ISO hoặc RFC2822
+    const [startDay, startMonth, startYear] = startDate.split("-");
+    const formattedStartDate = `${startDay.padStart(2, "0")}-${startMonth.padStart(2, "0")}-${startYear}`;
+
+    const [endDay, endMonth, endYear] = endDate.split("-");
+    const formattedEndDate = `${endDay.padStart(2, "0")}-${endMonth.padStart(2, "0")}-${endYear}`;
+
+    const data = await db.CancelOrder.findAll({
+      where: {
+        createdAt: {
+          [Op.between]: [formattedStartDate, formattedEndDate],
+        }
+      },
+    });
+    return { data };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+
 // Hàm lấy danh sách đơn hàng theo khoảng thời gian
 const getOrdersByDateRange = async (startDate, endDate) => {
   try {
@@ -37,7 +71,7 @@ const getOrdersByDateRange = async (startDate, endDate) => {
           where: {
             order_date: {
               [Op.between]: [startDate, endDate],
-            },
+            },status: { [db.Sequelize.Op.ne]: 3 }
           },
           include: [
             {
@@ -64,6 +98,9 @@ const calculateDailyRevenue = async () => {
         [fn("DATE", col("createdAt")), "orderDate"],
         [fn("SUM", col("total")), "totalRevenue"],
       ],
+      where: {
+        status: { [db.Sequelize.Op.ne]: 3 } // Exclude orders with status 3
+      },
       group: [literal("DATE(`createdAt`)")],
       order: [[literal("orderDate"), "ASC"]],
       raw: true,
@@ -96,6 +133,9 @@ const calculateDailyRevenueDaily = async (startDate, endDate) => {
       where: {
         createdAt: {
           [Op.between]: [startDateISO, endDatePlusOneISO],
+        },
+        status: {
+          [Op.ne]: 3, // Exclude orders with status 3
         },
       },
       attributes: [
@@ -141,12 +181,21 @@ const calculateTotalRevenueByDateRange = async (startDate, endDate) => {
         createdAt: {
           [Op.between]: [startDateISO, endDatePlusOneISO],
         },
+        status: {
+          [Op.ne]: 3, // Exclude orders with status 3
+        },
       },
-      attributes: [[fn("SUM", col("total")), "totalRevenue"],[fn("COUNT", col("id")), "totalOrders"],],
+      attributes: [
+        [fn("SUM", col("total")), "totalRevenue"],
+        [fn("COUNT", col("id")), "totalOrders"],
+      ],
       raw: true,
     });
 
-    return { totalRevenue: totalRevenue.totalRevenue || 0,totalOrders: totalRevenue.totalOrders || 0, }; // Return 0 if no revenue is found
+    return {
+      totalRevenue: totalRevenue.totalRevenue || 0,
+      totalOrders: totalRevenue.totalOrders || 0,
+    }; // Return 0 if no revenue is found
   } catch (error) {
     console.log(error);
     throw error;
@@ -166,5 +215,5 @@ module.exports = {
   getOrder,
   getOrdersByDateRange,
   calculateDailyRevenue,
-  calculateDailyRevenueDaily,calculateTotalRevenueByDateRange
+  calculateDailyRevenueDaily,calculateTotalRevenueByDateRange,getOrderCancel,getOrdersByDateRangeCancel
 };

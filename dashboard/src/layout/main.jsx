@@ -22,6 +22,7 @@ const Main = () => {
   const [data, setData] = useState([]);
   const [filter, Setfilter] = useState([]);
   const [dataFilter, setDataFilter] = useState([]);
+  const [showCharts, setShowCharts] = useState(false);
 
   const fetchCountOders = async () => {
     const response = await CountOders();
@@ -173,21 +174,22 @@ const Main = () => {
     // eslint-disable-next-line
   }, []);
 
+
   return (
-    <div className="flex-1 p-6 mx-auto container">
+    <div className="container mx-auto p-6 flex-1">
       <div className="flex items-center gap-3">
-        <span className="text-sm text-gray-400">
-          <ChevronRight />
-        </span>
-        <p className="text-black text-xl font-bold">Dashboard</p>
+        <ChevronRight />
+        <p className="text-xl font-bold text-black">Dashboard</p>
       </div>
-      <div className="flex flex-col bg-gray-50 rounded-lg md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 mt-12">
+
+      {/* Filter section */}
+      <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 mt-12 bg-gray-50 rounded-lg p-4">
         <div className="w-full md:w-1/4">
           <input
             value={startDate || ""}
             onChange={(e) => setStartDate(e.target.value)}
             type="date"
-            className="bg-gray-50 border text-sm rounded-lg block w-full pl-2 p-2"
+            className="bg-gray-100 border text-sm rounded-lg block w-full pl-2 py-2"
           />
         </div>
         <div className="w-full md:w-1/4">
@@ -195,13 +197,13 @@ const Main = () => {
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             type="date"
-            className="bg-gray-50 border text-sm rounded-lg block w-full pl-2 p-2"
+            className="bg-gray-100 border text-sm rounded-lg block w-full pl-2 py-2"
           />
         </div>
         <div className="w-full md:w-1/4">
           <button
             onClick={handleFilterBydate}
-            className="bg-black w-full hover:bg-yellow-500 rounded-lg text-white font-bold py-2 px-4"
+            className="bg-black w-full hover:bg-yellow-500 rounded-lg text-white font-bold py-2 px-4 transition duration-300 ease-in-out"
           >
             Filter
           </button>
@@ -209,96 +211,115 @@ const Main = () => {
         <div className="w-full md:w-1/4">
           <button
             onClick={handleClearFilter}
-            className="bg-red-500 hover:bg-blue-500 w-full rounded-lg text-white font-bold py-2 px-4"
+            className="bg-red-500 hover:bg-blue-500 w-full rounded-lg text-white font-bold py-2 px-4 transition duration-300 ease-in-out"
           >
             Clear
           </button>
         </div>
       </div>
+
+      {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 mt-12">
+        {/* Orders */}
         <div className="bg-gray-100 text-black rounded-lg shadow-lg p-6">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
             <ShoppingCart style={{ fontSize: 48, marginRight: 12 }} />
             Orders
           </h2>
-          <p>
-            Total Orders: {dataFilter.totalOrders || coutOrders.totalorder}{" "}
-            Orders
-          </p>
+          <p>Total Orders: {dataFilter.totalOrders || coutOrders.totalorder}</p>
+          <p>Total cancel Orders: {coutOrders.totalOrderWithStatus3}</p>
         </div>
+        {/* Products */}
         <div className="bg-gray-100 text-black rounded-lg shadow-lg p-6">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
             <Inventory style={{ fontSize: 48, marginRight: 12 }} />
             Products
           </h2>
-          <p>Total Products all time: {countProducts} Products</p>
+          <p>Total Products all time: {countProducts}</p>
         </div>
+        {/* Accounts */}
         <div className="bg-gray-100 text-black rounded-lg shadow-lg p-6">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
             <AccountBox style={{ fontSize: 48, marginRight: 12 }} />
             Accounts
           </h2>
-          <p>Total accounts all time: {countUsers} Accounts</p>
+          <p>Total accounts all time: {countUsers}</p>
         </div>
-       <div className="bg-gray-100 text-black rounded-lg shadow-lg p-6">
-  <h2 className="text-xl font-semibold mb-4 flex items-center">
-    <ReviewsOutlined style={{ fontSize: 48, marginRight: 12 }} />
-    Total Revenue
-  </h2>
-  {dataFilter.totalAmount !== undefined ? (
-    <>no data</>
-  ) : dataFilter.totalRevenue !== undefined ? (
-    <>
-      <p>Total startDate to endDate: {dataFilter.totalRevenue} $</p>
-      <p>
-        To VND:{" "}
-        {(dataFilter.totalRevenue * 25457).toLocaleString("vi-VN")} VND
-      </p>
-    </>
-  ) : (
-    <>
-      <p>Total Revenue all time: {coutOrders.totalAmount} $</p>
-      <p>
-        To VND:{" "}
-        {(coutOrders.totalAmount * 25457).toLocaleString("vi-VN")} VND
-      </p>
-    </>
-  )}
-  {dataFilter.totalRevenue && (
-    <p>
-      Two decimal digits:{" "}
-      {dataFilter.totalRevenue.toString().includes(".") ? dataFilter.totalRevenue.toString().split(".")[1].slice(0, 2) : "00"}
-    </p>
-  )}
-</div>
-
-      </div>
-      
-      <div className="pt-8">
-        <h2 className="text-2xl font-semibold mb-4">Total Revenue Barchar</h2>
-        {dataFilter.totalRevenue === 0  ? (
-          <div className="bg-white rounded-lg shadow-lg p-6">
-          <p>No data available</p>
+        {/* Total Revenue */}
+        <div className="bg-gray-100 text-black rounded-lg shadow-lg p-6">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
+            <ReviewsOutlined style={{ fontSize: 48, marginRight: 12 }} />
+            Total Revenue
+          </h2>
+          {dataFilter.totalAmount !== undefined ? (
+            <>no data</>
+          ) : dataFilter.totalRevenue !== undefined ? (
+            <>
+              <p>Total startDate to endDate: {dataFilter.totalRevenue} $</p>
+              <p>
+                To VND:{" "}
+                {(dataFilter.totalRevenue * 25457).toLocaleString("vi-VN")} VND
+              </p>
+            </>
+          ) : (
+            <>
+              <p>Total Revenue all time: {coutOrders.totalAmount} $</p>
+              <p>
+                To VND:{" "}
+                {(coutOrders.totalAmount * 25457).toLocaleString("vi-VN")} VND
+              </p>
+            </>
+          )}
+          {dataFilter.totalRevenue && (
+            <p>
+              Two decimal digits:{" "}
+              {dataFilter.totalRevenue.toString().includes(".")
+                ? dataFilter.totalRevenue.toString().split(".")[1].slice(0, 2)
+                : "00"}
+            </p>
+          )}
         </div>
-        ) : (
-           <div className="bg-white rounded-lg shadow-lg p-6">
-           <Bar data={chartData} options={chartOptions} />
-         </div>
-        )}
       </div>
 
-      <div className="pt-8">
-        <h2 className="text-2xl font-semibold mb-4">Total Revenue Linechar</h2>
-        {dataFilter.totalRevenue === 0 ? (
-          <div className="bg-white rounded-lg shadow-lg p-6">
-          <p>No data available</p>
-        </div>
-        ) : (
-           <div className="bg-white rounded-lg shadow-lg p-6">
-           <Line data={lineChartData} options={chartOptions} />
-         </div>
-        )}
+      <div className="flex justify-center mt-8">
+        <button
+          onClick={() => setShowCharts(!showCharts)}
+          className="bg-black text-white py-2 px-4 rounded-lg shadow-md hover:bg-yellow-500 hover:text-black animate-bounce"
+        >
+          {showCharts ? "Hide Charts" : "Show Charts"}
+        </button>
       </div>
+
+      {showCharts && (
+        <>
+          {/* Charts */}
+          <div className="pt-8">
+            <h2 className="text-2xl font-semibold mb-4">
+              Total Revenue Barchar
+            </h2>
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              {dataFilter.totalRevenue === 0 ? (
+                <p>No data available</p>
+              ) : (
+                <Bar data={chartData} options={chartOptions} />
+              )}
+            </div>
+          </div>
+
+          <div className="pt-8">
+            <h2 className="text-2xl font-semibold mb-4">
+              Total Revenue Linechar
+            </h2>
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              {dataFilter.totalRevenue === 0 ? (
+                <p>No data available</p>
+              ) : (
+                <Line data={lineChartData} options={chartOptions} />
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

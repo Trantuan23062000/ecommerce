@@ -158,7 +158,7 @@ const Checkout = () => {
         />
       ) : null}
 
-      <div className="mx-auto max-w-4xl p-4 border bg-white border-black rounded mb-12">
+      <div className="mx-auto max-w-4xl mt-24 p-4 border bg-white border-black rounded mb-12">
         <h3 className="text-xl font-medium capitalize mb-4 border-b border-gray-200">
           Checkout
         </h3>

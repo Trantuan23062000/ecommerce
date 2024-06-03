@@ -20,3 +20,15 @@ export const FilterDaylyTotal = async(startDate,endDate) =>{
 export const DatabyDate =async (startDate,endDate) =>{
    return await axios.get(`http://localhost:8000/api/v1/oders/bytotalDate?startDate=${startDate}&endDate=${endDate}`)
 }
+
+export const getOrderCancel = async() =>{
+    return await axios.get("http://localhost:8000/api/v1/cancelOrder")
+}
+
+export const DatabyCancelDate =async (startDate,endDate) =>{
+    return await axios.get(`http://localhost:8000/api/v1/cancelOrder/filterOrder?startDate=${startDate}&endDate=${endDate}`)
+ }
+
+export const AcpectCancelOrder = async(id)=>{
+    return await axios.delete(`http://localhost:8000/api/v1/CancelOder/${id}`)
+}

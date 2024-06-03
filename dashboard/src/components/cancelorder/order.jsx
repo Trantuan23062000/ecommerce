@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Edit, Delete, Search, Airplay, ChevronRight } from "@mui/icons-material";
-import { GetOders, FilterByDate } from "../../api/oder";
+import { Search, ChevronRight, CheckCircleOutline } from "@mui/icons-material";
+import {
+  getOrderCancel,
+  DatabyCancelDate,
+  AcpectCancelOrder,
+} from "../../api/oder";
 import toast from "react-hot-toast";
-import Vieworder from "./vieworder";
 
-const Order = () => {
+const CancelOrder = () => {
   const [data, setData] = useState([]);
-  const [show, setShow] = useState(false);
-  const [order, setOrder] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6); // Items per page
 
   const fetchData = async (start, end, page = 1) => {
-    const response = await GetOders({
+    const response = await getOrderCancel({
       startDate: start,
       endDate: end,
       page,
@@ -22,18 +23,15 @@ const Order = () => {
     });
     if (response && response.data && response.data.EC === 0) {
       setData(response.data.data);
-      setOrder(response.data.data);
     } else {
       toast.error("Fetch data error !");
     }
   };
 
-  const formatDateToSend = (dateString) => {
-    // Chuyển đổi từ chuỗi 'yyyy-mm-dd' sang mảng [yyyy, mm, dd]
-    const [year, month, day] = dateString.split("-");
-
-    // Định dạng lại chuỗi ngày tháng năm theo định dạng 'dd/mm/yyyy'
-    return `${day}/${month}/${year}`;
+  const handleClearFilter = async () => {
+    setStartDate(""); // Xóa ngày bắt đầu
+    setEndDate(""); // Xóa ngày kết thúc
+    fetchData(); // Fetch dữ liệu lại
   };
 
   const handleFilterBydate = async () => {
@@ -42,27 +40,35 @@ const Order = () => {
       return;
     }
     try {
-      const formattedStartDate = formatDateToSend(startDate);
-      const formattedEndDate = formatDateToSend(endDate);
-      const response = await FilterByDate(formattedStartDate, formattedEndDate);
-      setData(response.data.orders);
+      const response = await DatabyCancelDate(startDate, endDate);
+      setData(response.data.data);
     } catch (error) {
       toast.error("Fetch filtered data error !");
     }
   };
 
-  const handleShow = (order) => {
-    setOrder(order);
-    setShow(true);
+  const formatDate = (isoString) => {
+    // Tạo một đối tượng Date từ chuỗi thời gian ISO 8601
+    const date = new Date(isoString);
+
+    // Lấy các thành phần ngày, tháng và năm từ đối tượng Date
+    const day = date.getDate();
+    const month = date.getMonth() + 1; // Tháng bắt đầu từ 0, nên cần cộng thêm 1
+    const year = date.getFullYear();
+
+    // Chuyển đổi thành chuỗi với định dạng "DD/MM/YYYY"
+    const formattedDate = `${day.toString().padStart(2, "0")}/${month
+      .toString()
+      .padStart(2, "0")}/${year}`;
+
+    return formattedDate;
   };
 
-  const handleClose = () => {
-    setShow(false);
-  };
-  const handleClearFilter = async () => {
-    setStartDate(""); // Xóa ngày bắt đầu
-    setEndDate(""); // Xóa ngày kết thúc
-    fetchData(); // Fetch dữ liệu lại
+  const hanDleAcpect = async (id) => {
+    await AcpectCancelOrder(id);
+    toast.success("Apect order")
+    fetchData()
+   
   };
 
   const handlePageChange = (page) => {
@@ -80,28 +86,12 @@ const Order = () => {
   return (
     <>
       <div className="container mx-auto">
-      <div className="py-4 ml-4 flex items-center gap-3">
-        <span className="text-sm text-gray-400">
-          <ChevronRight />
-        </span>
-        <p className="text-gray-600 font-medium">Order</p>
-      </div>
-        {show && (
-          <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div className="flex items-center justify-center min-h-screen px-4 pb-20 text-center">
-              <div className="fixed inset-0 transition-opacity">
-                <div className="absolute inset-0 bg-transparent opacity-75"></div>
-              </div>
-              <span
-                className="hidden sm:inline-block sm:align-middle sm:h-screen"
-                aria-hidden="true"
-              >
-                &#8203;
-              </span>
-              <Vieworder data={order} close={handleClose} />
-            </div>
-          </div>
-        )}
+        <div className="py-4 ml-4 flex items-center gap-3">
+          <span className="text-sm text-gray-400">
+            <ChevronRight />
+          </span>
+          <p className="text-gray-600 font-medium">Order</p>
+        </div>
         <section className="dark:bg-gray-900 p-3 sm:p-5">
           <div className="px-4 lg:px-12">
             <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
@@ -142,22 +132,18 @@ const Order = () => {
                 </div>
                 <div className="w-full md:w-1/4">
                   <button
-                    onClick={
-                       handleFilterBydate
-                    }
+                    onClick={handleFilterBydate}
                     className="bg-black w-full rounded-lg text-white font-bold py-2 px-4"
                   >
-                   Filter
+                    Filter
                   </button>
                 </div>
                 <div className="w-full md:w-1/4">
                   <button
-                    onClick={
-                       handleClearFilter
-                    }
+                    onClick={handleClearFilter}
                     className="bg-red-500 w-full rounded-lg text-white font-bold py-2 px-4"
                   >
-                   Clear
+                    Clear
                   </button>
                 </div>
               </div>
@@ -172,19 +158,22 @@ const Order = () => {
                         Code orders
                       </th>
                       <th scope="col" className="px-4 py-3">
-                        Username
+                        Pay
                       </th>
                       <th scope="col" className="px-4 py-3">
-                        Total
-                      </th>
-                      <th scope="col" className="px-4 py-3">
-                        Payment
+                        Date
                       </th>
                       <th scope="col" className="px-4 py-3">
                         Status
                       </th>
                       <th scope="col" className="px-4 py-3">
-                        Order_date
+                        Number payment
+                      </th>
+                      <th scope="col" className="px-4 py-3">
+                        Name account
+                      </th>
+                      <th scope="col" className="px-4 py-3">
+                        Name bank
                       </th>
                       <th scope="col" className="px-4 py-3">
                         <span className="sr-only">Actions</span>
@@ -209,51 +198,46 @@ const Order = () => {
                               </th>
                               <td className="px-4 py-3"> {item.id}</td>
                               <td className="px-4 py-3">
-                                {item.Order.User.username}
-                              </td>
-                              <td className="px-4 py-3">
                                 {" "}
-                                {item.total.toLocaleString("en-US", {
-                                  style: "currency",
-                                  currency: "USD",
-                                })}
-                              </td>
-                              <td className="px-4 py-3">{item.payment}</td>
-                              <td className="px-4 py-3">
-                                {item.status === "0"
-                                  ? "Chờ thanh toán"
-                                  : item.status === "2"
-                                  ? "Thanh toán thành công"
-                                  :item.status === "3"?"Trạng thái đang chờ xác nhận huỷ "
-                                  : "Đã huỷ "
-                                  }
+                                <span className="bg-yellow-500 rounded-xl text-white px-1.5 py-2">
+                                  {item.pay}$
+                                </span>
                               </td>
                               <td className="px-4 py-3">
-                                {item.Order.order_date}
+                                {formatDate(item.date)}
+                              </td>
+
+                              <td className="px-4 py-3">
+                                {item.status === 2 ? (
+                                  <span className="bg-green-500  px-1.5 py-2 rounded-xl text-white">
+                                    Hoàn tiền
+                                  </span>
+                                ) : (
+                                  <span className="bg-red-500  px-1.5 py-2 rounded-xl text-white">
+                                    Không hoàn tiền
+                                  </span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3">
+                                {item.numberPayment || "Không có thông tin"}
+                              </td>
+                              <td className="px-4 py-3">
+                                {item.nameAccount || "Không có thông tin"}
+                              </td>
+                              <td className="px-4 py-3">
+                                {item.nameBank || "Không có thông tin"}
                               </td>
                               <td className="px-4 py-3 flex items-center justify-end">
                                 <>
                                   <div className="relative">
                                     <div
-                                      onClick={() => {
-                                        handleShow(item);
-                                      }}
-                                      className="inline-flex items-center p-0.5 text-sm font-medium text-center text-blue-500 hover:text-blue-800"
+                                      onClick={() => hanDleAcpect(item.id)}
+                                      className="inline-flex items-center p-0.5 text-sm font-medium text-center text-green-500 hover:text-green-800"
                                       type="button"
                                     >
-                                      <Airplay />
-                                    </div>
-                                    <div
-                                      className="inline-flex items-center p-0.5 text-sm font-medium text-center text-yellow-500 hover:text-yellow-800"
-                                      type="button"
-                                    >
-                                      <Edit />
-                                    </div>
-                                    <div
-                                      className="inline-flex items-center p-0.5 text-sm font-medium text-center text-red-500 hover:text-red-900"
-                                      type="button"
-                                    >
-                                      <Delete />
+                                      <CheckCircleOutline
+                                        style={{ fontSize: 32 }}
+                                      />
                                     </div>
                                   </div>
                                 </>
@@ -349,4 +333,4 @@ const Order = () => {
   );
 };
 
-export default Order;
+export default CancelOrder;

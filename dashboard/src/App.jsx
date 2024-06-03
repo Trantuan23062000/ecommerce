@@ -15,6 +15,7 @@ import Login from "./components/auth/login";
 import Account from "./components/account/account";
 import Show from "./components/account/show";
 import Banner from "./components/banner/Banner";
+import CancelOrder from "./components/cancelorder/order";
 
 
 const App = () => {
@@ -39,6 +40,7 @@ const App = () => {
                 <Route exact path="/account" element={<Account />} />
                 <Route exact path="/login" element={<Login />} />
                 <Route exact path="/myorder/:userId" element={<Show />} />
+                <Route exact path="/cancel-order" element={<CancelOrder />} />
                 <Route />
               </Routes>
             </div>

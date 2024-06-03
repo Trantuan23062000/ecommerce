@@ -1,9 +1,26 @@
 import { PictureAsPdf } from "@mui/icons-material";
 import React from "react";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const Vieworder = (props) => {
   const data = props.data.data;
   const order = JSON.parse(data);
+
+  const exportPDF = () => {
+    const input = document.getElementById('orderDetails');
+    html2canvas(input)
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF();
+        const imgProps= pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`order_${props.data.id}.pdf`);
+      });
+  };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center px-4 pb-20 text-center">
       <div className="fixed inset-0 transition-opacity">
@@ -16,7 +33,7 @@ const Vieworder = (props) => {
         &#8203;
       </span>
       <div className="inline-block align-bottom bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-4xl sm:w-full">
-        <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4" id="orderDetails">
           <div className="sm:flex sm:items-start">
             <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
               <h3 className="text-2xl p-6 leading-6 font-bold text-gray-900">
@@ -81,7 +98,7 @@ const Vieworder = (props) => {
                     </tbody>
                   </table>
                   <div className="justify-between font-semibold space-x-5">
-                    <span>Total quatity: {props.data.quantity}</span>
+                    <span>Total quantity: {props.data.quantity}</span>
                     <span className=" space-x-5">
                       Total price + shipping(5$) :{" "}
                       {props.data.total.toLocaleString("en-US", {
@@ -104,7 +121,7 @@ const Vieworder = (props) => {
             Close
           </button>
           <button
-            onClick={props.close}
+            onClick={exportPDF}
             type="button"
             className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-yellow-600 text-base font-medium text-white hover:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
           >

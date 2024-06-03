@@ -1,4 +1,4 @@
-import { createOrder,createOrderVnpay,cancelOrder } from "../../services/order/order"; // Đảm bảo rằng đường dẫn đúng
+import { createOrder,createOrderVnpay,cancelOrder,confirmCancel } from "../../services/order/order"; // Đảm bảo rằng đường dẫn đúng
 
 const Orders = async (req, res) => {
   try {
@@ -22,9 +22,20 @@ const vnPay = async (req, res) => {
 };
 
 const cancelOrders = async (req, res) => {
-  const { orderId } = req.body;
+  const { orderId ,numberPayment,nameBank,nameAccount } = req.body;
   try {
-    const result = await cancelOrder(orderId);
+    const result = await cancelOrder(orderId,numberPayment,nameBank,nameAccount);
+    res.status(200).json({EC:0 ,result});
+  } catch (error) {
+    res.status(500).json({ EC:1 ,message: "Failed to cancel order", error: error.message });
+  }
+};
+
+
+const ConfirmCancelOrder = async (req, res) => {
+  const cancelOrderId = req.params.id;
+  try {
+    const result = await confirmCancel(cancelOrderId);
     res.status(200).json({EC:0 ,result});
   } catch (error) {
     res.status(500).json({ EC:1 ,message: "Failed to cancel order", error: error.message });
@@ -33,4 +44,4 @@ const cancelOrders = async (req, res) => {
 
 
 
-module.exports = { Orders,vnPay,cancelOrders };
+module.exports = { Orders,vnPay,cancelOrders,ConfirmCancelOrder };

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Airplay,
   ChevronRight,
   ControlPointRounded,
   DeleteOutline,
@@ -238,12 +237,6 @@ const ProductImage = () => {
                         <td className="px-4 py-3">{item.category}</td>
                         <td className="px-4 py-3 flex justify-center">
                           <div className="">
-                            <div
-                              className="inline-flex items-center p-0.5 text-sm font-medium text-center text-blue-500 hover:text-blue-800"
-                              type="button"
-                            >
-                              <Airplay />
-                            </div>
                             <div
                               onClick={() => handleEdit(item)}
                               className="inline-flex items-center p-0.5 text-sm font-medium text-center text-yellow-500 hover:text-yellow-800"

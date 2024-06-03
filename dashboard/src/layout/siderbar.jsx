@@ -98,23 +98,34 @@ const Sidebar = () => {
           )}
           <div
             className={`cursor-pointer flex items-center mb-4 px-4 py-2 rounded-lg ${
-              expandedItem === "Orrder"
-                ? "bg-orange-400"
-                : activeItem === "Orrder" // Sử dụng activeItem để xác định lớp CSS cho mục active
-                ? "bg-orange-400"
-                : "hover:bg-orange-400"
+              expandedItem === "Order" ? "bg-orange-400" : "hover:bg-orange-400"
             }`}
-            onClick={() => handleItemClick("Orrder")}
+            onClick={() => handleItemClick("Order")}
           >
             <ShoppingCart style={{ fontSize: 36 }} className="mr-2" />
-            <Link
-              to="/order"
-              className="flex-grow font-semibold"
-              onClick={() => setExpandedItem("")}
-            >
-              Order
-            </Link>
+            <span className="flex-grow font-semibold">Order</span>
+            {expandedItem === "Order" ? (
+              <ArrowDropUpRounded style={{ fontSize: 48 }} />
+            ) : (
+              <ArrowRightRounded style={{ fontSize: 48 }} />
+            )}
           </div>
+
+          {expandedItem === "Order" && (
+            <ul className="pl-2 space-y-2">
+              <li>
+                <Link to="/order" className="block text-lg">
+                  <ChevronRight /> Order
+                </Link>
+              </li>
+              <li>
+                <Link to="/cancel-order" className="block text-lg">
+                  <ChevronRight /> Order cancel
+                </Link>
+              </li>
+            </ul>
+          )}
+
           <div
             className={`cursor-pointer flex items-center mb-4 px-4 py-2 rounded-lg ${
               expandedItem === "Account"
@@ -142,7 +153,9 @@ const Sidebar = () => {
             onClick={() => handleItemClick("Banner")}
           >
             <WalletRounded style={{ fontSize: 36 }} className="mr-2" />
-            <span className="flex-grow font-semibold"><Link to="/banner">Banner</Link></span>
+            <span className="flex-grow font-semibold">
+              <Link to="/banner">Banner</Link>
+            </span>
           </div>
           <div className="mt-4 cursor-pointer flex items-center px-4 py-2 rounded-lg hover:bg-orange-400">
             <Logout style={{ fontSize: 36 }} className="mr-2" />

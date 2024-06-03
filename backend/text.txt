@@ -10,3 +10,6 @@ npx sequelize-cli model:generate --name size --attributes size:string,desciption
 
 
 npx sequelize model:generate --name Banner --attributes URL:string
+
+
+npx sequelize model:generate --name CancelOrder --attributes orderId:UUID,UserId:UUID,orderDetailId:UUID,date:string

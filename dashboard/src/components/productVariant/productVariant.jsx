@@ -6,7 +6,6 @@ import {
 import {
   ChevronRight,
   ControlPointRounded,
-  CrisisAlert,
   Delete,
   Edit,
   Search,
@@ -219,12 +218,6 @@ const ProductVariant = () => {
                           <td className="px-4 py-3"> {item.productVariant ? item.productVariant.Size.size : ""}</td>
                           <td className="px-4 py-3 flex items-center justify-end">
                             <div className="relative">
-                              <div
-                                className="inline-flex items-center p-0.5 text-sm font-medium text-center text-blue-500 hover:text-blue-800"
-                                type="button"
-                              >
-                                <CrisisAlert />
-                              </div>
                               <div onClick={()=>HandleEdit(item)}
                                 className="inline-flex items-center p-0.5 text-sm font-medium text-center text-yellow-500 hover:text-yellow-800"
                                 type="button"

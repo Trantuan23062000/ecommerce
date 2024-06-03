@@ -53,7 +53,7 @@ const Odersuccess = () => {
             whileTap={{ scale: 0.95 }}
             className="bg-black text-white font-semibold py-2 px-4 rounded-xl focus:outline-none focus:ring-2 hover:text-yellow-500"
           >
-            <Link to="/shop">Continue Shopping</Link>
+            <Link to="/all-product">Continue Shopping</Link>
           </motion.div>
         </div>
       </motion.div>
